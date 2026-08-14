@@ -49,6 +49,8 @@ import { ApiKeysRepository } from '../api-keys/api-keys.repository';
     TenantAdminGuard,
     PlatformAdminGuard,
     SystemGuard,
+    LoginUseCase,
+    LogoutUseCase,
   ],
 })
 export class AuthModule {}

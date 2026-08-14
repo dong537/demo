@@ -20,6 +20,7 @@ This directory contains guidelines for backend development. Fill in each file wi
 | [Quality Guidelines](./quality-guidelines.md) | Code standards, forbidden patterns | To fill |
 | [Logging Guidelines](./logging-guidelines.md) | Structured logging, log levels, provider upstream request logs | Partial |
 | [Provider Ops CLI Guidelines](./provider-ops-cli.md) | Provider CLI contracts, secret handling, tenant boundary, verification | Partial |
+| [Frozen Frontend Legacy API](./legacy-api-v1.md) | `/api/v1` compatibility, auth token separation, legacy IDs, and old-host proxy rollout | Active |
 
 ---
 

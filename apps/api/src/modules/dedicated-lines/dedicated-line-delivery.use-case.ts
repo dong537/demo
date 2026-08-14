@@ -15,7 +15,7 @@ export class DedicatedLineDeliveryUseCase {
     const lines = await prisma.dedicated_lines.findMany({
       where: { siteId: ctx.siteId, tenantId: ctx.tenantId ?? '', userId: ctx.ownerId },
       orderBy: { createdAt: 'desc' },
-      include: { inboundProfile: true, deliveryRoutes: { where: { isCurrent: true }, include: { domains: true } }, projections: { where: { migrationId: null }, select: { status: true } } },
+      include: { sku: { select: { code: true, name: true } }, dedicatedLineOrder: { select: { id: true } }, inboundProfile: true, deliveryRoutes: { where: { isCurrent: true }, include: { domains: true } }, projections: { where: { migrationId: null }, select: { status: true } } },
     });
     return lines.map((line) => this.toDelivery(line));
   }
@@ -24,17 +24,20 @@ export class DedicatedLineDeliveryUseCase {
     requireUserContext(ctx);
     const line = await prisma.dedicated_lines.findFirst({
       where: { id: lineId, siteId: ctx.siteId, tenantId: ctx.tenantId ?? '', userId: ctx.ownerId },
-      include: { inboundProfile: true, deliveryRoutes: { where: { isCurrent: true }, include: { domains: true } }, projections: { where: { migrationId: null }, select: { status: true } } },
+      include: { sku: { select: { code: true, name: true } }, dedicatedLineOrder: { select: { id: true } }, inboundProfile: true, deliveryRoutes: { where: { isCurrent: true }, include: { domains: true } }, projections: { where: { migrationId: null }, select: { status: true } } },
     });
     if (!line) throw new AppError(ErrorCode.NOT_FOUND, 'dedicated_line_not_found', 404);
     return this.toDelivery(line);
   }
 
-  private toDelivery(line: Awaited<ReturnType<typeof prisma.dedicated_lines.findFirstOrThrow>> & { inboundProfile: { inboundTag: string }; deliveryRoutes: Array<{ domains: Array<{ hostname: string; port: number; isPrimary: boolean }>; listenPort: number }>; projections: Array<{ status: string }> }) {
+  private toDelivery(line: Awaited<ReturnType<typeof prisma.dedicated_lines.findFirstOrThrow>> & { sku?: { code: string; name: string }; dedicatedLineOrder?: { id: string } | null; inboundProfile: { inboundTag: string }; deliveryRoutes: Array<{ domains: Array<{ hostname: string; port: number; isPrimary: boolean }>; listenPort: number }>; projections: Array<{ status: string }> }) {
     const route = line.deliveryRoutes[0];
     const ready = line.status === 'ACTIVE' || line.status === 'DEGRADED';
     return {
       id: line.id,
+      legacyId: line.legacyId,
+      orderNo: line.dedicatedLineOrder?.id ?? line.id,
+      sku: line.sku ?? null,
       status: line.status,
       countryCode: line.countryCode,
       protocol: line.protocol,
@@ -50,6 +53,7 @@ export class DedicatedLineDeliveryUseCase {
       projections: { ready: line.projections.filter((projection) => projection.status === 'READY').length, total: line.projections.length },
       domains: route?.domains.map((domain) => ({ hostname: domain.hostname, port: domain.port, isPrimary: domain.isPrimary })) ?? [],
       client: ready ? this.decryptClient(line.clientIdentityCiphertext, line.clientEmail) : null,
+      legacyRemark: line.legacyRemark ?? null,
     };
   }
 

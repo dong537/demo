@@ -388,6 +388,8 @@ const defaultTestConfig: EnvConfig = {
   API_BODY_LIMIT_BYTES: Number(process.env['API_BODY_LIMIT_BYTES'] ?? 1_048_576),
   OPENAPI_EXPOSURE_ENABLED: process.env['OPENAPI_EXPOSURE_ENABLED'] === 'true' ? 'true' : 'false',
   CORS_ORIGINS: process.env['CORS_ORIGINS'] ?? '',
+  LEGACY_API_V1_ENABLED: process.env['LEGACY_API_V1_ENABLED'] === 'true' ? 'true' : 'false',
+  LEGACY_API_SITE_ID: process.env['LEGACY_API_SITE_ID'] ?? '',
   ALLOW_PLACEHOLDER_APIKEYS: 'false',
   ALLOW_LOCAL_DEV_APIKEY: 'false',
   PAYMENT_CONFIRMATION_ENABLED: process.env['PAYMENT_CONFIRMATION_ENABLED'] === 'true' ? 'true' : 'false',

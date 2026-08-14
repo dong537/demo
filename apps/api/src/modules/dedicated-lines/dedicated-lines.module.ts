@@ -17,6 +17,6 @@ import { LineDomainBindingsUseCase } from './line-domain-bindings.use-case';
   imports: [CatalogModule, WalletModule],
   controllers: [DeliveryRoutesController, DedicatedLineDeliveryController, DedicatedLineControlPlaneAdminController],
   providers: [ConfigService, DeliveryRouteImportUseCase, DedicatedLineDeliveryUseCase, RenewDedicatedLineUseCase, DedicatedLineLifecycleUseCase, ListDedicatedLineLimitsUseCase, UpdateDedicatedLineLimitsUseCase, CreatePlacementPolicyUseCase, LineDomainBindingsUseCase],
-  exports: [DeliveryRouteImportUseCase, DedicatedLineDeliveryUseCase],
+  exports: [DeliveryRouteImportUseCase, DedicatedLineDeliveryUseCase, RenewDedicatedLineUseCase],
 })
 export class DedicatedLinesModule {}

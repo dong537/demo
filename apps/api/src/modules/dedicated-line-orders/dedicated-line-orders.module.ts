@@ -31,6 +31,7 @@ import { WalletModule } from '../wallet/wallet.module';
     DedicatedLineInventoryRepository,
     DedicatedLineOrderRepository,
     ProcessDedicatedLineOrderUseCase,
+    CreateDedicatedLineOrderUseCase,
   ],
 })
 export class DedicatedLineOrdersModule {}

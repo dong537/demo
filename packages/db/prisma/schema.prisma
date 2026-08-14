@@ -1341,6 +1341,8 @@ model dedicated_lines {
   activeMigrationId         String?                          @unique
   activeMigration           dedicated_line_migrations?      @relation("ActiveLineMigration", fields: [activeMigrationId], references: [id])
   idempotencyKey            String
+  legacyId                  Int                              @unique @default(autoincrement())
+  legacyRemark              String?
   createdAt                 DateTime                         @default(now())
   updatedAt                 DateTime                         @updatedAt
   placement                 dedicated_line_placements?

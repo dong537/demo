@@ -38,7 +38,20 @@ class ApiProbeController {
   }
 }
 
-@Module({ controllers: [ResStaticProbeController, ApiProbeController] })
+@Controller('v1/settings')
+class LegacyApiV1ProbeController {
+  @Get('capabilities')
+  capabilities(): { dedicatedUiEnabled: boolean } {
+    return { dedicatedUiEnabled: true };
+  }
+
+  @Get('failure')
+  failure(): never {
+    throw new AppError(ErrorCode.UPSTREAM_OUT_OF_STOCK, 'dedicated_line_inventory_unavailable', 422);
+  }
+}
+
+@Module({ controllers: [ResStaticProbeController, ApiProbeController, LegacyApiV1ProbeController] })
 class ProbeModule {}
 
 let app: NestFastifyApplication;
@@ -73,6 +86,27 @@ describe('res_static envelope compatibility', () => {
     expect(res.status).toBe(200);
     expect(res.body).toMatchObject({ code: 0, msg: 'success', data: { ok: true } });
     expect(res.body.requestId).toBeDefined();
+  });
+
+  it('serves legacy /api/v1 success responses without the platform envelope', async () => {
+    const res = await request.get('/api/v1/settings/capabilities');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ dedicatedUiEnabled: true });
+  });
+
+  it('serves legacy /api/v1 failures in the frozen frontend error shape', async () => {
+    const res = await request.get('/api/v1/settings/failure');
+
+    expect(res.status).toBe(422);
+    expect(res.body).toMatchObject({
+      statusCode: 422,
+      message: 'dedicated_line_inventory_unavailable',
+      errorCode: 'UPSTREAM_OUT_OF_STOCK',
+      path: '/api/v1/settings/failure',
+    });
+    expect(res.body.timestamp).toEqual(expect.any(String));
+    expect(res.body).not.toHaveProperty('requestId');
   });
 
   it('maps res_static errors to code/msg/data:null without requestId', async () => {

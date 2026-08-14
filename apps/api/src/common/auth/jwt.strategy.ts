@@ -12,6 +12,10 @@ export class JwtStrategy {
   constructor(private readonly authRepo: AuthRepository) {}
 
   async authenticate(bearerToken: string): Promise<AuthenticatedContext & { sessionId: string }> {
+    if (bearerToken.startsWith('rt_')) {
+      throw new AppError(ErrorCode.AUTH_REQUIRED, 'refresh_token_not_allowed', 401);
+    }
+
     const hash = crypto.createHash('sha256').update(bearerToken).digest('hex');
     const session = await this.authRepo.findSessionByTokenHash(hash);
 

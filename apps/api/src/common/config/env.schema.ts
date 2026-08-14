@@ -15,6 +15,8 @@ const envSchema = z.object({
   API_BODY_LIMIT_BYTES: z.coerce.number().int().min(1_024).max(10_485_760).default(1_048_576),
   OPENAPI_EXPOSURE_ENABLED: z.enum(['true', 'false']).default('false'),
   CORS_ORIGINS: z.string().default(''),
+  LEGACY_API_V1_ENABLED: z.enum(['true', 'false']).default('false'),
+  LEGACY_API_SITE_ID: z.string().default(''),
   ALLOW_PLACEHOLDER_APIKEYS: z.enum(['true', 'false']).default('false'),
   ALLOW_LOCAL_DEV_APIKEY: z.enum(['true', 'false']).default('false'),
   PAYMENT_CONFIRMATION_ENABLED: z.enum(['true', 'false']).default('false'),

@@ -30,9 +30,10 @@ import { DedicatedLinesModule } from './modules/dedicated-lines/dedicated-lines.
 import { DedicatedLineMigrationsModule } from './modules/dedicated-line-migrations/dedicated-line-migrations.module';
 import { DedicatedLineHealthModule } from './modules/dedicated-line-health/dedicated-line-health.module';
 import { ProductionReadinessModule } from './modules/production-readiness/production-readiness.module';
+import { ApiV1CompatModule } from './modules/api-v1-compat/api-v1-compat.module';
 
 @Module({
-  imports: [AuthModule, ApiKeysModule, WalletModule, PaymentsModule, ProvidersModule, ResourcesModule, PricingModule, OrdersModule, ProxiesModule, OpenApiModule, TenantsModule, SitesModule, UpstreamAccountsModule, UsersModule, AuditModule, TicketsModule, NotificationsModule, ProxyCheckModule, UpstreamRequestLogsModule, CustomerResellerModule, CatalogModule, DedicatedLineOrdersModule, DedicatedLinesModule, DedicatedLineMigrationsModule, DedicatedLineHealthModule, ProductionReadinessModule],
+  imports: [AuthModule, ApiKeysModule, WalletModule, PaymentsModule, ProvidersModule, ResourcesModule, PricingModule, OrdersModule, ProxiesModule, OpenApiModule, TenantsModule, SitesModule, UpstreamAccountsModule, UsersModule, AuditModule, TicketsModule, NotificationsModule, ProxyCheckModule, UpstreamRequestLogsModule, CustomerResellerModule, CatalogModule, DedicatedLineOrdersModule, DedicatedLinesModule, DedicatedLineMigrationsModule, DedicatedLineHealthModule, ProductionReadinessModule, ApiV1CompatModule],
   controllers: [HealthController],
   providers: [ConfigService, LoggerService],
   exports: [ConfigService, LoggerService],

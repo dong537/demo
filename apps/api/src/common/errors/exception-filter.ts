@@ -4,6 +4,7 @@ import { AppError } from './app-error';
 import { ErrorCode } from './error-codes';
 import { requestIdStorage } from '../logging/request-id.context';
 import { isResStaticRequest } from '../http/res-static-compat';
+import { isLegacyApiV1Request, legacyApiV1RequestPath } from '../http/legacy-api-v1';
 
 @Catch()
 export class AppExceptionFilter implements ExceptionFilter {
@@ -14,9 +15,15 @@ export class AppExceptionFilter implements ExceptionFilter {
     const requestId = requestIdStorage.getStore() ?? '';
     const isProd = process.env['NODE_ENV'] === 'production';
     const resStatic = isResStaticRequest(request);
+    const legacyApiV1 = isLegacyApiV1Request(request);
 
     if (exception instanceof AppError) {
-      sendJsonResponse(reply, exception.httpStatus, errorPayload({
+      sendJsonResponse(reply, exception.httpStatus, legacyApiV1 ? legacyErrorPayload({
+        statusCode: exception.httpStatus,
+        message: exception.message,
+        errorCode: exception.code,
+        path: legacyApiV1RequestPath(request),
+      }) : errorPayload({
         code: exception.code,
         message: exception.message,
         reasonKey: exception.reasonKey,
@@ -25,7 +32,12 @@ export class AppExceptionFilter implements ExceptionFilter {
         resStatic,
       }));
     } else if (exception instanceof ZodError) {
-      sendJsonResponse(reply, 422, errorPayload({
+      sendJsonResponse(reply, 422, legacyApiV1 ? legacyErrorPayload({
+        statusCode: 422,
+        message: 'Validation failed',
+        errorCode: ErrorCode.VALIDATION_ERROR,
+        path: legacyApiV1RequestPath(request),
+      }) : errorPayload({
         code: ErrorCode.VALIDATION_ERROR,
         message: 'Validation failed',
         reasonKey: 'validation_failed',
@@ -36,7 +48,12 @@ export class AppExceptionFilter implements ExceptionFilter {
     } else if (exception instanceof HttpException) {
       const status = exception.getStatus();
       const mapped = mapHttpException(status);
-      sendJsonResponse(reply, status, errorPayload({
+      sendJsonResponse(reply, status, legacyApiV1 ? legacyErrorPayload({
+        statusCode: status,
+        message: mapped.message ?? exception.message,
+        errorCode: mapped.code,
+        path: legacyApiV1RequestPath(request),
+      }) : errorPayload({
         code: mapped.code,
         message: mapped.message ?? exception.message,
         reasonKey: mapped.reasonKey,
@@ -46,7 +63,12 @@ export class AppExceptionFilter implements ExceptionFilter {
       }));
     } else {
       const err = exception as Error;
-      sendJsonResponse(reply, HttpStatus.INTERNAL_SERVER_ERROR, errorPayload({
+      sendJsonResponse(reply, HttpStatus.INTERNAL_SERVER_ERROR, legacyApiV1 ? legacyErrorPayload({
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Internal server error',
+        errorCode: ErrorCode.INTERNAL_ERROR,
+        path: legacyApiV1RequestPath(request),
+      }) : errorPayload({
         code: ErrorCode.INTERNAL_ERROR,
         message: 'Internal server error',
         reasonKey: 'internal_error',
@@ -63,6 +85,14 @@ type ErrorEnvelope = {
   msg: string;
   data: { reasonKey: string; details?: Record<string, unknown> } | null;
   requestId?: string;
+};
+
+type LegacyErrorPayload = {
+  statusCode: number;
+  message: string;
+  errorCode: ErrorCode;
+  timestamp: string;
+  path: string;
 };
 
 type JsonResponseLike = {
@@ -100,7 +130,11 @@ function errorPayload(input: {
   };
 }
 
-function sendJsonResponse(reply: unknown, status: number, body: ErrorEnvelope): void {
+function legacyErrorPayload(input: Omit<LegacyErrorPayload, 'timestamp'>): LegacyErrorPayload {
+  return { ...input, timestamp: new Date().toISOString() };
+}
+
+function sendJsonResponse(reply: unknown, status: number, body: ErrorEnvelope | LegacyErrorPayload): void {
   const response = reply as JsonResponseLike | undefined;
   if (!response || isResponseClosed(response)) {
     return;

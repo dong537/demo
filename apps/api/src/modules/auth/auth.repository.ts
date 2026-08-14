@@ -7,6 +7,7 @@ import { ErrorCode } from '../../common/errors/error-codes';
 export type Session = Prisma.sessionsGetPayload<Record<string, never>>;
 
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+const REFRESH_SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
 @Injectable()
 export class AuthRepository {
@@ -26,7 +27,16 @@ export class AuthRepository {
     token: string;
     expiresAt: Date;
   }): Promise<Session> {
-    return prisma.sessions.create({ data });
+    return prisma.sessions.create({
+      data: {
+        ownerType: data.ownerType,
+        ownerId: data.ownerId,
+        siteId: data.siteId,
+        tenantId: data.tenantId,
+        token: data.token,
+        expiresAt: data.expiresAt,
+      },
+    });
   }
 
   /**
@@ -43,6 +53,19 @@ export class AuthRepository {
     const plainToken = crypto.randomBytes(32).toString('hex');
     const tokenHash = crypto.createHash('sha256').update(plainToken).digest('hex');
     const expiresAt = new Date(Date.now() + SESSION_TTL_MS);
+    const session = await this.createSession({ ...owner, token: tokenHash, expiresAt });
+    return { token: plainToken, expiresAt: session.expiresAt };
+  }
+
+  async issueRefreshSession(owner: {
+    ownerType: 'USER' | 'ADMIN_USER';
+    ownerId: string;
+    siteId: string;
+    tenantId: string | null;
+  }): Promise<{ token: string; expiresAt: Date }> {
+    const plainToken = `rt_${crypto.randomBytes(32).toString('hex')}`;
+    const tokenHash = crypto.createHash('sha256').update(plainToken).digest('hex');
+    const expiresAt = new Date(Date.now() + REFRESH_SESSION_TTL_MS);
     const session = await this.createSession({ ...owner, token: tokenHash, expiresAt });
     return { token: plainToken, expiresAt: session.expiresAt };
   }

@@ -12,6 +12,11 @@ export class ConfigGuard {
           return;
         }
       }
+      if (env.LEGACY_API_V1_ENABLED === 'true' && !env.LEGACY_API_SITE_ID.trim()) {
+        console.error('[ConfigGuard] Legacy API v1 requires LEGACY_API_SITE_ID');
+        process.exit(1);
+        return;
+      }
       if (
         env.PROVIDER_FULFILLMENT_EXECUTION_ENABLED === 'true' &&
         parseAllowlist(env.PROVIDER_FULFILLMENT_PROVIDER_ALLOWLIST).size === 0 &&

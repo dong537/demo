@@ -54,6 +54,40 @@ export class DedicatedLineInventoryRepository implements InventoryReservationSou
       : null;
   }
 
+  async listFreshLocations(input: {
+    siteId: string;
+    tenantId: string;
+  }): Promise<Array<{ countryCode: string; availableQuantity: number }>> {
+    const snapshots = await prisma.dedicated_line_inventory_snapshots.findMany({
+      where: { siteId: input.siteId, expiresAt: { gt: new Date() } },
+      select: {
+        countryCode: true,
+        quantity: true,
+        reservedQuantity: true,
+        providerAccount: { select: { status: true, tenantId: true } },
+        sku: { select: { capabilities: true, isActive: true, isVisible: true } },
+      },
+    });
+    const byCountry = new Map<string, number>();
+    for (const snapshot of snapshots) {
+      if (
+        snapshot.providerAccount.status !== 'ACTIVE'
+        || (snapshot.providerAccount.tenantId !== null && snapshot.providerAccount.tenantId !== input.tenantId)
+        || !snapshot.sku.isActive
+        || !snapshot.sku.isVisible
+        || !isDedicatedLineSku(snapshot.sku.capabilities)
+      ) continue;
+      const available = Math.max(0, snapshot.quantity - snapshot.reservedQuantity);
+      if (available > 0) {
+        const country = snapshot.countryCode.trim().toUpperCase();
+        byCountry.set(country, (byCountry.get(country) ?? 0) + available);
+      }
+    }
+    return [...byCountry.entries()]
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([countryCode, availableQuantity]) => ({ countryCode, availableQuantity }));
+  }
+
   async syncProviderSnapshot(input: {
     siteId: string;
     providerAccountId: string;
@@ -305,6 +339,11 @@ export class DedicatedLineInventoryRepository implements InventoryReservationSou
       throw error;
     }
   }
+}
+
+function isDedicatedLineSku(value: unknown): boolean {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  return (value as Record<string, unknown>)['delivery'] === 'dedicated-line';
 }
 
 async function assertScope(tx: Prisma.TransactionClient, input: ReserveDedicatedLineStockInput): Promise<void> {
