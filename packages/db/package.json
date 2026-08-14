@@ -1,0 +1,24 @@
+{
+  "name": "@ipeasy/db",
+  "version": "0.0.1",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "migrate:dev": "prisma migrate dev --schema prisma/schema.prisma",
+    "migrate:deploy": "prisma migrate deploy --schema prisma/schema.prisma",
+    "generate": "prisma generate --schema prisma/schema.prisma",
+    "studio": "prisma studio --schema prisma/schema.prisma"
+  },
+  "dependencies": {
+    "@prisma/client": "6.2.1"
+  },
+  "devDependencies": {
+    "@ipeasy/tsconfig": "workspace:*",
+    "@types/node": "22.10.5",
+    "prisma": "6.2.1",
+    "typescript": "5.7.2"
+  }
+}

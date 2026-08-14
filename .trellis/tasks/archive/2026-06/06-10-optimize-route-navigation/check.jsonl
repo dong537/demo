@@ -1,0 +1,2 @@
+{"file":".trellis/spec/frontend/state-management.md","reason":"Verify auth cache behavior remains token-aware and does not replace backend auth source of truth."}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Verify route/auth behavior with focused tests and typecheck."}

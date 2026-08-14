@@ -1,0 +1,33 @@
+{
+  "id": "01-monorepo-init",
+  "title": "Monorepo 初始化",
+  "description": "用 pnpm workspace + Turborepo 初始化仓库骨架，建立 apps/ packages/ 目录、共享 tsconfig/eslint、根 package.json、.env.example、docker-compose.yml、.gitignore。",
+  "status": "completed",
+  "priority": "P0",
+  "phase": 1,
+  "dependsOn": [],
+  "files": [
+    "package.json",
+    "pnpm-workspace.yaml",
+    "turbo.json",
+    ".env.example",
+    ".gitignore",
+    "docker-compose.yml",
+    "README.md",
+    "packages/tsconfig/tsconfig.base.json",
+    "packages/tsconfig/package.json",
+    "packages/eslint-config/index.js",
+    "packages/eslint-config/package.json",
+    "apps/api/package.json",
+    "apps/api/tsconfig.json",
+    "apps/web/package.json",
+    "apps/web/tsconfig.json",
+    "apps/worker/package.json",
+    "apps/worker/tsconfig.json",
+    "packages/db/package.json",
+    "packages/contracts/package.json",
+    "packages/config/package.json"
+  ],
+  "createdAt": "2026-06-06",
+  "completedAt": "2026-06-08"
+}

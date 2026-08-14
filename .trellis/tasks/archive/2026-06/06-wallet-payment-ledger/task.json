@@ -1,0 +1,32 @@
+{
+  "id": "06-wallet-payment-ledger",
+  "title": "Wallet / Payment / Ledger 单币种链路",
+  "description": "实现充值单创建、人工确认支付、钱包查询、账本查询、Admin 调账。所有资金变化走事务，不改钱包只建充值单，确认后事务内更新 wallet+ledger+payment_order+audit。",
+  "status": "completed",
+  "priority": "P0",
+  "phase": 1,
+  "dependsOn": [
+    "05-auth-apikey-rbac"
+  ],
+  "files": [
+    "apps/api/src/modules/wallet/wallet.module.ts",
+    "apps/api/src/modules/wallet/wallet.controller.ts",
+    "apps/api/src/modules/wallet/use-cases/get-wallet.use-case.ts",
+    "apps/api/src/modules/wallet/use-cases/list-ledger.use-case.ts",
+    "apps/api/src/modules/wallet/use-cases/adjust-wallet.use-case.ts",
+    "apps/api/src/modules/wallet/wallet.repository.ts",
+    "apps/api/src/modules/wallet/domain.ts",
+    "apps/api/src/modules/wallet/dto.ts",
+    "apps/api/src/modules/payments/payments.module.ts",
+    "apps/api/src/modules/payments/payments.controller.ts",
+    "apps/api/src/modules/payments/use-cases/create-payment-order.use-case.ts",
+    "apps/api/src/modules/payments/use-cases/confirm-payment-order.use-case.ts",
+    "apps/api/src/modules/payments/payments.repository.ts",
+    "apps/api/src/modules/payments/domain.ts",
+    "apps/api/src/modules/payments/dto.ts",
+    "apps/api/src/modules/wallet/tests/wallet.spec.ts",
+    "apps/api/src/modules/payments/tests/payments.spec.ts"
+  ],
+  "createdAt": "2026-06-06",
+  "completedAt": "2026-06-08"
+}

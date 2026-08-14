@@ -1,0 +1,4661 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "HealthController_health",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Health"
+        ]
+      }
+    },
+    "/ready": {
+      "get": {
+        "operationId": "HealthController_ready",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Health"
+        ]
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "operationId": "AuthController_register",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "operationId": "AuthController_me",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/auth/change-password": {
+      "post": {
+        "operationId": "AuthController_changePassword",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/api-keys": {
+      "get": {
+        "operationId": "ApiKeysController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ApiKeys"
+        ]
+      },
+      "post": {
+        "operationId": "ApiKeysController_create",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ApiKeys"
+        ]
+      }
+    },
+    "/api/api-keys/{id}": {
+      "delete": {
+        "operationId": "ApiKeysController_revoke",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ApiKeys"
+        ]
+      }
+    },
+    "/api/wallet/{userId}": {
+      "get": {
+        "operationId": "WalletController_get",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Wallet"
+        ]
+      }
+    },
+    "/api/wallet/{userId}/ledger": {
+      "get": {
+        "operationId": "WalletController_ledger",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Wallet"
+        ]
+      }
+    },
+    "/api/wallet/{userId}/adjust": {
+      "post": {
+        "operationId": "WalletController_adjust",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Wallet"
+        ]
+      }
+    },
+    "/api/payments": {
+      "post": {
+        "operationId": "PaymentsController_create",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Payments"
+        ]
+      },
+      "get": {
+        "operationId": "PaymentsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Payments"
+        ]
+      }
+    },
+    "/api/payments/{id}": {
+      "get": {
+        "operationId": "PaymentsController_detail",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Payments"
+        ]
+      }
+    },
+    "/api/payments/{id}/confirm": {
+      "post": {
+        "operationId": "PaymentsController_confirm",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Payments"
+        ]
+      }
+    },
+    "/api/providers": {
+      "get": {
+        "operationId": "ProvidersController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Providers"
+        ]
+      },
+      "post": {
+        "operationId": "ProvidersController_create",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Providers"
+        ]
+      }
+    },
+    "/api/providers/{id}/health-check": {
+      "post": {
+        "operationId": "ProvidersController_healthCheck",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Providers"
+        ]
+      }
+    },
+    "/api/providers/{id}": {
+      "put": {
+        "operationId": "ProvidersController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Providers"
+        ]
+      }
+    },
+    "/api/providers/{id}/resources/saleability": {
+      "put": {
+        "operationId": "ProvidersController_updateResourceSaleability",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Providers"
+        ]
+      }
+    },
+    "/api/resources": {
+      "get": {
+        "operationId": "ResourcesController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Resources"
+        ]
+      },
+      "post": {
+        "operationId": "ResourcesController_create",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Resources"
+        ]
+      }
+    },
+    "/api/resources/priceable-catalog/summary": {
+      "get": {
+        "operationId": "ResourcesController_priceableCatalogSummary",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Resources"
+        ]
+      }
+    },
+    "/api/resources/priceable-catalog/groups": {
+      "get": {
+        "operationId": "ResourcesController_priceableCatalogGroups",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Resources"
+        ]
+      }
+    },
+    "/api/resources/priceable-catalog/group-saleability": {
+      "post": {
+        "operationId": "ResourcesController_updatePriceableCatalogGroupSaleability",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Resources"
+        ]
+      }
+    },
+    "/api/resources/priceable-catalog": {
+      "get": {
+        "operationId": "ResourcesController_priceableCatalog",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Resources"
+        ]
+      }
+    },
+    "/api/resources/countries": {
+      "get": {
+        "operationId": "ResourcesController_countries",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Resources"
+        ]
+      }
+    },
+    "/api/resources/{id}": {
+      "put": {
+        "operationId": "ResourcesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Resources"
+        ]
+      }
+    },
+    "/api/resources/{id}/inventory": {
+      "get": {
+        "operationId": "ResourcesController_getInventory",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Resources"
+        ]
+      },
+      "put": {
+        "operationId": "ResourcesController_updateInventory",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Resources"
+        ]
+      }
+    },
+    "/api/resources/sync-inventory": {
+      "post": {
+        "operationId": "ResourcesController_syncInventoryHandler",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Resources"
+        ]
+      }
+    },
+    "/api/resources/{id}/sync-inventory": {
+      "post": {
+        "operationId": "ResourcesController_syncResourceInventory",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Resources"
+        ]
+      }
+    },
+    "/api/dedicated-line-orders": {
+      "post": {
+        "operationId": "DedicatedLineOrdersController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDedicatedLineOrderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "DedicatedLineOrders"
+        ]
+      }
+    },
+    "/api/catalog/skus": {
+      "get": {
+        "operationId": "CatalogController_listCustomerSkus",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Catalog"
+        ]
+      }
+    },
+    "/api/catalog/admin/skus": {
+      "get": {
+        "operationId": "CatalogController_listAdminSkus",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Catalog"
+        ]
+      }
+    },
+    "/api/catalog/quote": {
+      "get": {
+        "operationId": "CatalogController_quoteCustomer",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Catalog"
+        ]
+      }
+    },
+    "/api/catalog/admin/quote": {
+      "get": {
+        "operationId": "CatalogController_quoteAdmin",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Catalog"
+        ]
+      }
+    },
+    "/api/pricing/templates": {
+      "get": {
+        "operationId": "PricingController_listTemplates",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Pricing"
+        ]
+      },
+      "post": {
+        "operationId": "PricingController_createTemplate",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Pricing"
+        ]
+      }
+    },
+    "/api/pricing/templates/{id}/rules": {
+      "post": {
+        "operationId": "PricingController_createRules",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Pricing"
+        ]
+      }
+    },
+    "/api/pricing/dedicated-skus": {
+      "get": {
+        "operationId": "PricingController_listDedicatedSkuPricing",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Pricing"
+        ]
+      }
+    },
+    "/api/pricing/dedicated-skus/template-rules": {
+      "post": {
+        "operationId": "PricingController_upsertDedicatedSkuTemplateRule",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Pricing"
+        ]
+      }
+    },
+    "/api/pricing/dedicated-skus/overrides": {
+      "post": {
+        "operationId": "PricingController_upsertDedicatedSkuOverride",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Pricing"
+        ]
+      }
+    },
+    "/api/pricing/dedicated-skus/user-overrides": {
+      "post": {
+        "operationId": "PricingController_upsertUserDedicatedSkuOverride",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Pricing"
+        ]
+      }
+    },
+    "/api/pricing/matrix": {
+      "get": {
+        "operationId": "PricingController_listMatrix",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Pricing"
+        ]
+      }
+    },
+    "/api/pricing/matrix/summary": {
+      "get": {
+        "operationId": "PricingController_listMatrixSummary",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Pricing"
+        ]
+      }
+    },
+    "/api/pricing/overrides": {
+      "post": {
+        "operationId": "PricingController_createOverride",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Pricing"
+        ]
+      }
+    },
+    "/api/pricing/resource-group-overrides": {
+      "post": {
+        "operationId": "PricingController_createResourceGroupOverride",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Pricing"
+        ]
+      }
+    },
+    "/api/pricing/user-overrides": {
+      "post": {
+        "operationId": "PricingController_createUserOverride",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Pricing"
+        ]
+      }
+    },
+    "/api/pricing/user-template-bindings": {
+      "post": {
+        "operationId": "PricingController_bindUserTemplate",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Pricing"
+        ]
+      }
+    },
+    "/api/pricing/quote-sandbox": {
+      "post": {
+        "operationId": "PricingController_quoteSandbox",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Pricing"
+        ]
+      }
+    },
+    "/api/pricing/quote": {
+      "get": {
+        "operationId": "PricingController_quote",
+        "parameters": [
+          {
+            "name": "resourceId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "durationDays",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "quantity",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "currency",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Pricing"
+        ]
+      }
+    },
+    "/api/orders/static-proxy": {
+      "post": {
+        "operationId": "OrdersController_createStaticProxy",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateStaticProxyOrderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "410": {
+            "description": "Static proxy purchase is disabled"
+          }
+        },
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
+    "/api/orders/users/{userId}/static-proxy": {
+      "post": {
+        "operationId": "OrdersController_createStaticProxyForUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminCreateStaticProxyOrderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "410": {
+            "description": "Static proxy purchase is disabled"
+          }
+        },
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
+    "/api/orders": {
+      "get": {
+        "operationId": "OrdersController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
+    "/api/orders/{id}/retry-fulfillment": {
+      "post": {
+        "operationId": "OrdersController_retryFulfillment",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminOrderOperationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminOrderOperationResultDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
+    "/api/orders/{id}/refund": {
+      "post": {
+        "operationId": "OrdersController_refund",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequiredAdminOrderOperationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminOrderOperationResultDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
+    "/api/orders/{id}/manual-complete": {
+      "post": {
+        "operationId": "OrdersController_manualComplete",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequiredAdminOrderOperationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminOrderOperationResultDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
+    "/api/orders/{id}/fulfillment": {
+      "get": {
+        "operationId": "OrdersController_getFulfillment",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
+    "/api/orders/{id}": {
+      "get": {
+        "operationId": "OrdersController_getById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
+    "/api/proxies/export": {
+      "get": {
+        "operationId": "ProxiesController_export",
+        "parameters": [
+          {
+            "name": "format",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Proxies"
+        ]
+      }
+    },
+    "/api/proxies": {
+      "get": {
+        "operationId": "ProxiesController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Proxies"
+        ]
+      }
+    },
+    "/api/proxies/{id}": {
+      "get": {
+        "operationId": "ProxiesController_getById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Proxies"
+        ]
+      }
+    },
+    "/api/proxies/batch-renew": {
+      "post": {
+        "operationId": "ProxiesController_batchRenew",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Proxies"
+        ]
+      }
+    },
+    "/api/proxies/batch-change-password": {
+      "post": {
+        "operationId": "ProxiesController_batchChangePassword",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Proxies"
+        ]
+      }
+    },
+    "/api/proxies/batch-switch-ip": {
+      "post": {
+        "operationId": "ProxiesController_batchSwitchIp",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Proxies"
+        ]
+      }
+    },
+    "/api/proxies/{id}/renew": {
+      "post": {
+        "operationId": "ProxiesController_renew",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Proxies"
+        ]
+      }
+    },
+    "/api/proxies/{id}/change-password": {
+      "post": {
+        "operationId": "ProxiesController_changePassword",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Proxies"
+        ]
+      }
+    },
+    "/api/proxies/{id}/switch-ip": {
+      "post": {
+        "operationId": "ProxiesController_switchIp",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Proxies"
+        ]
+      }
+    },
+    "/res_static/business": {
+      "post": {
+        "operationId": "ResStaticController_business",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BusinessListDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ResStatic"
+        ]
+      }
+    },
+    "/res_static/inventory": {
+      "post": {
+        "operationId": "ResStaticController_inventory",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InventoryQueryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ResStatic"
+        ]
+      }
+    },
+    "/res_static/calculate": {
+      "post": {
+        "operationId": "ResStaticController_calculate",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CalculateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ResStatic"
+        ]
+      }
+    },
+    "/res_static/buy": {
+      "post": {
+        "operationId": "ResStaticController_buy",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BuyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ResStatic"
+        ]
+      }
+    },
+    "/res_static/renew": {
+      "post": {
+        "operationId": "ResStaticController_renew",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RenewDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ResStatic"
+        ]
+      }
+    },
+    "/res_static/order_result": {
+      "post": {
+        "operationId": "ResStaticController_orderResult",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderResultDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ResStatic"
+        ]
+      }
+    },
+    "/res_static/order_list": {
+      "post": {
+        "operationId": "ResStaticController_orderList",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderListDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ResStatic"
+        ]
+      }
+    },
+    "/res_static/ip_list": {
+      "post": {
+        "operationId": "ResStaticController_ipList",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IpListDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ResStatic"
+        ]
+      }
+    },
+    "/api/res_static/ip_export": {
+      "post": {
+        "operationId": "ResStaticController_ipExport",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IpExportDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ResStatic"
+        ]
+      }
+    },
+    "/res_static/ip_detail": {
+      "post": {
+        "operationId": "ResStaticController_ipDetail",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IpDetailDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ResStatic"
+        ]
+      }
+    },
+    "/res_static/change_auth": {
+      "post": {
+        "operationId": "ResStaticController_changeAuth",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeAuthDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ResStatic"
+        ]
+      }
+    },
+    "/res_static/switch_ip_list": {
+      "post": {
+        "operationId": "ResStaticController_switchIpList",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SwitchIpListDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ResStatic"
+        ]
+      }
+    },
+    "/res_static/switch_ip": {
+      "post": {
+        "operationId": "ResStaticController_switchIpAction",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SwitchIpDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ResStatic"
+        ]
+      }
+    },
+    "/res_static/wallet/balance": {
+      "post": {
+        "operationId": "ResStaticController_walletBalance",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ResStatic"
+        ]
+      }
+    },
+    "/res_static/wallet/records": {
+      "post": {
+        "operationId": "ResStaticController_walletRecords",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WalletRecordsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ResStatic"
+        ]
+      }
+    },
+    "/api/openapi/dedicated/skus": {
+      "get": {
+        "operationId": "DedicatedOpenApiController_listSkus",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "DedicatedOpenApi"
+        ]
+      }
+    },
+    "/api/openapi/dedicated/wallet": {
+      "get": {
+        "operationId": "DedicatedOpenApiController_wallet",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "DedicatedOpenApi"
+        ]
+      }
+    },
+    "/api/openapi/dedicated/inventory": {
+      "get": {
+        "operationId": "DedicatedOpenApiController_inventory",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "DedicatedOpenApi"
+        ]
+      }
+    },
+    "/api/openapi/dedicated/quote": {
+      "get": {
+        "operationId": "DedicatedOpenApiController_quote",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "DedicatedOpenApi"
+        ]
+      }
+    },
+    "/api/tenants": {
+      "get": {
+        "operationId": "TenantsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantPageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tenants"
+        ]
+      },
+      "post": {
+        "operationId": "TenantsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTenantDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantListItemDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tenants"
+        ]
+      }
+    },
+    "/api/tenants/self-service": {
+      "post": {
+        "operationId": "TenantsController_createSelfService",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSelfServiceTenantDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SelfServiceTenantResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tenants"
+        ]
+      }
+    },
+    "/api/tenants/{id}": {
+      "get": {
+        "operationId": "TenantsController_getById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantDetailDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tenants"
+        ]
+      }
+    },
+    "/api/tenants/{id}/status": {
+      "put": {
+        "operationId": "TenantsController_updateStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTenantStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantListItemDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tenants"
+        ]
+      }
+    },
+    "/api/tenants/{id}/brand": {
+      "get": {
+        "operationId": "TenantBrandController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantBrandDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "TenantBrand"
+        ]
+      },
+      "put": {
+        "operationId": "TenantBrandController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTenantBrandConfigDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantBrandDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "TenantBrand"
+        ]
+      }
+    },
+    "/api/tenants/{tenantId}/provider-accounts": {
+      "get": {
+        "operationId": "TenantProviderAccountsController_list",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TenantProviderAccountDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "TenantProviderAccounts"
+        ]
+      },
+      "post": {
+        "operationId": "TenantProviderAccountsController_create",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTenantProviderAccountDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantProviderAccountDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "TenantProviderAccounts"
+        ]
+      }
+    },
+    "/api/tenants/{tenantId}/provider-accounts/{accountId}": {
+      "put": {
+        "operationId": "TenantProviderAccountsController_update",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "accountId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTenantProviderAccountDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantProviderAccountDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "TenantProviderAccounts"
+        ]
+      },
+      "delete": {
+        "operationId": "TenantProviderAccountsController_disable",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "accountId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantProviderAccountDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "TenantProviderAccounts"
+        ]
+      }
+    },
+    "/api/tenants/{tenantId}/provider-accounts/{accountId}/sync-inventory": {
+      "post": {
+        "operationId": "TenantProviderAccountsController_syncInventoryHandler",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "accountId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "TenantProviderAccounts"
+        ]
+      }
+    },
+    "/api/sites/current": {
+      "get": {
+        "operationId": "SitesController_getCurrent",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Sites"
+        ]
+      }
+    },
+    "/api/sites/current/brand": {
+      "put": {
+        "operationId": "SitesController_updateBrand",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Sites"
+        ]
+      }
+    },
+    "/api/sites/current/domain": {
+      "put": {
+        "operationId": "SitesController_updateDomain",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSiteDomainDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Sites"
+        ]
+      }
+    },
+    "/api/sites/current/maintenance": {
+      "put": {
+        "operationId": "SitesController_setMaintenance",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Sites"
+        ]
+      }
+    },
+    "/api/sites/current/announcements": {
+      "get": {
+        "operationId": "SitesController_listAnnouncements",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Sites"
+        ]
+      },
+      "post": {
+        "operationId": "SitesController_createAnnouncement",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Sites"
+        ]
+      }
+    },
+    "/api/sites/current/announcements/{id}": {
+      "put": {
+        "operationId": "SitesController_updateAnnouncement",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Sites"
+        ]
+      },
+      "delete": {
+        "operationId": "SitesController_deactivateAnnouncement",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Sites"
+        ]
+      }
+    },
+    "/api/upstream-accounts": {
+      "get": {
+        "operationId": "UpstreamAccountsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "UpstreamAccounts"
+        ]
+      },
+      "post": {
+        "operationId": "UpstreamAccountsController_create",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "UpstreamAccounts"
+        ]
+      }
+    },
+    "/api/upstream-accounts/{id}": {
+      "put": {
+        "operationId": "UpstreamAccountsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "UpstreamAccounts"
+        ]
+      },
+      "delete": {
+        "operationId": "UpstreamAccountsController_disable",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "UpstreamAccounts"
+        ]
+      }
+    },
+    "/api/upstream-accounts/{id}/test": {
+      "post": {
+        "operationId": "UpstreamAccountsController_test",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "UpstreamAccounts"
+        ]
+      }
+    },
+    "/api/upstream-accounts/{id}/sync-inventory": {
+      "post": {
+        "operationId": "UpstreamAccountsController_syncInventory",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "UpstreamAccounts"
+        ]
+      }
+    },
+    "/api/users/me": {
+      "get": {
+        "operationId": "UsersController_me",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      },
+      "put": {
+        "operationId": "UsersController_updateMe",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/users": {
+      "get": {
+        "operationId": "UsersController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      },
+      "post": {
+        "operationId": "UsersController_create",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/users/{id}/impersonate": {
+      "post": {
+        "operationId": "UsersController_impersonate",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/audit": {
+      "get": {
+        "operationId": "AuditController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Audit"
+        ]
+      }
+    },
+    "/api/tickets": {
+      "get": {
+        "operationId": "TicketsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tickets"
+        ]
+      },
+      "post": {
+        "operationId": "TicketsController_create",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tickets"
+        ]
+      }
+    },
+    "/api/tickets/{id}": {
+      "get": {
+        "operationId": "TicketsController_getById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tickets"
+        ]
+      }
+    },
+    "/api/tickets/{id}/messages": {
+      "post": {
+        "operationId": "TicketsController_reply",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tickets"
+        ]
+      }
+    },
+    "/api/tickets/{id}/close": {
+      "post": {
+        "operationId": "TicketsController_close",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tickets"
+        ]
+      }
+    },
+    "/api/admin/tickets": {
+      "get": {
+        "operationId": "AdminTicketsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "AdminTickets"
+        ]
+      }
+    },
+    "/api/admin/tickets/{id}": {
+      "get": {
+        "operationId": "AdminTicketsController_getById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "AdminTickets"
+        ]
+      }
+    },
+    "/api/admin/tickets/{id}/messages": {
+      "post": {
+        "operationId": "AdminTicketsController_reply",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "AdminTickets"
+        ]
+      }
+    },
+    "/api/admin/tickets/{id}/status": {
+      "post": {
+        "operationId": "AdminTicketsController_updateStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "AdminTickets"
+        ]
+      }
+    },
+    "/api/notifications": {
+      "get": {
+        "operationId": "NotificationsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Notifications"
+        ]
+      }
+    },
+    "/api/notifications/unread-count": {
+      "get": {
+        "operationId": "NotificationsController_unreadCount",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Notifications"
+        ]
+      }
+    },
+    "/api/notifications/read-all": {
+      "post": {
+        "operationId": "NotificationsController_readAll",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Notifications"
+        ]
+      }
+    },
+    "/api/notifications/{id}/read": {
+      "post": {
+        "operationId": "NotificationsController_markRead",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Notifications"
+        ]
+      }
+    },
+    "/api/proxy-check": {
+      "post": {
+        "operationId": "ProxyCheckController_check",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ProxyCheck"
+        ]
+      }
+    },
+    "/api/upstream-request-logs": {
+      "get": {
+        "operationId": "UpstreamRequestLogsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "UpstreamRequestLogs"
+        ]
+      }
+    },
+    "/api/customer/reseller/me": {
+      "get": {
+        "operationId": "CustomerResellerController_me",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "CustomerReseller"
+        ]
+      }
+    },
+    "/api/customer/reseller/overview": {
+      "get": {
+        "operationId": "CustomerResellerController_overview",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "CustomerReseller"
+        ]
+      }
+    },
+    "/api/customer/reseller/users": {
+      "get": {
+        "operationId": "CustomerResellerController_users",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "CustomerReseller"
+        ]
+      },
+      "post": {
+        "operationId": "CustomerResellerController_createUser",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "CustomerReseller"
+        ]
+      }
+    },
+    "/api/customer/reseller/users/{userId}/wallet-adjust": {
+      "post": {
+        "operationId": "CustomerResellerController_adjustUserWallet",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "CustomerReseller"
+        ]
+      }
+    },
+    "/api/customer/reseller/orders": {
+      "get": {
+        "operationId": "CustomerResellerController_orders",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "CustomerReseller"
+        ]
+      }
+    },
+    "/api/customer/reseller/templates": {
+      "get": {
+        "operationId": "CustomerResellerController_templates",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "CustomerReseller"
+        ]
+      },
+      "post": {
+        "operationId": "CustomerResellerController_createTemplate",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "CustomerReseller"
+        ]
+      }
+    },
+    "/api/customer/reseller/products": {
+      "get": {
+        "operationId": "CustomerResellerController_products",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "CustomerReseller"
+        ]
+      },
+      "post": {
+        "operationId": "CustomerResellerController_saveProducts",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "CustomerReseller"
+        ]
+      }
+    },
+    "/api/customer/reseller/templates/{id}/rules": {
+      "post": {
+        "operationId": "CustomerResellerController_rules",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "CustomerReseller"
+        ]
+      }
+    },
+    "/api/customer/reseller/upstream-connections": {
+      "get": {
+        "operationId": "FederatedUpstreamController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "FederatedUpstream"
+        ]
+      },
+      "post": {
+        "operationId": "FederatedUpstreamController_create",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "FederatedUpstream"
+        ]
+      }
+    },
+    "/api/customer/reseller/upstream-connections/{id}": {
+      "put": {
+        "operationId": "FederatedUpstreamController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "FederatedUpstream"
+        ]
+      },
+      "delete": {
+        "operationId": "FederatedUpstreamController_disable",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "FederatedUpstream"
+        ]
+      }
+    },
+    "/api/customer/reseller/upstream-connections/{id}/scan": {
+      "post": {
+        "operationId": "FederatedUpstreamController_scan",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "FederatedUpstream"
+        ]
+      }
+    },
+    "/api/admin/delivery-routes/import": {
+      "post": {
+        "operationId": "DeliveryRoutesController_import",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "DeliveryRoutes"
+        ]
+      }
+    },
+    "/api/dedicated-lines": {
+      "get": {
+        "operationId": "DedicatedLineDeliveryController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "DedicatedLineDelivery"
+        ]
+      }
+    },
+    "/api/dedicated-lines/{id}": {
+      "get": {
+        "operationId": "DedicatedLineDeliveryController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "DedicatedLineDelivery"
+        ]
+      }
+    },
+    "/api/dedicated-lines/{id}/renew": {
+      "post": {
+        "operationId": "DedicatedLineDeliveryController_renewLine",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "DedicatedLineDelivery"
+        ]
+      }
+    },
+    "/api/dedicated-lines/{id}/suspend": {
+      "post": {
+        "operationId": "DedicatedLineDeliveryController_suspend",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DedicatedLineLifecycleResultDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "DedicatedLineDelivery"
+        ]
+      }
+    },
+    "/api/dedicated-lines/{id}/resume": {
+      "post": {
+        "operationId": "DedicatedLineDeliveryController_resume",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DedicatedLineLifecycleResultDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "DedicatedLineDelivery"
+        ]
+      }
+    },
+    "/api/admin/control-plane/nodes": {
+      "get": {
+        "operationId": "DedicatedLineControlPlaneAdminController_nodes",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "DedicatedLineControlPlaneAdmin"
+        ]
+      },
+      "post": {
+        "operationId": "DedicatedLineControlPlaneAdminController_createNode",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "DedicatedLineControlPlaneAdmin"
+        ]
+      }
+    },
+    "/api/admin/control-plane/references": {
+      "get": {
+        "operationId": "DedicatedLineControlPlaneAdminController_references",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "DedicatedLineControlPlaneAdmin"
+        ]
+      }
+    },
+    "/api/admin/control-plane/nodes/{id}": {
+      "put": {
+        "operationId": "DedicatedLineControlPlaneAdminController_updateNode",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "DedicatedLineControlPlaneAdmin"
+        ]
+      }
+    },
+    "/api/admin/control-plane/placement-policies": {
+      "post": {
+        "operationId": "DedicatedLineControlPlaneAdminController_createPolicy",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "DedicatedLineControlPlaneAdmin"
+        ]
+      },
+      "get": {
+        "operationId": "DedicatedLineControlPlaneAdminController_policies",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "DedicatedLineControlPlaneAdmin"
+        ]
+      }
+    },
+    "/api/admin/control-plane/lines/{id}/domains": {
+      "put": {
+        "operationId": "DedicatedLineControlPlaneAdminController_updateDomains",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "DedicatedLineControlPlaneAdmin"
+        ]
+      }
+    },
+    "/api/admin/control-plane/lines/{id}/limits": {
+      "put": {
+        "operationId": "DedicatedLineControlPlaneAdminController_updateLimits",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDedicatedLineLimitsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DedicatedLineLimitsResultDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "DedicatedLineControlPlaneAdmin"
+        ]
+      }
+    },
+    "/api/admin/control-plane/lines": {
+      "get": {
+        "operationId": "DedicatedLineControlPlaneAdminController_lines",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DedicatedLineLimitPageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "DedicatedLineControlPlaneAdmin"
+        ]
+      }
+    },
+    "/api/admin/control-plane/lines/recommendations": {
+      "get": {
+        "operationId": "DedicatedLineMigrationsController_recommendationsList",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "DedicatedLineMigrations"
+        ]
+      }
+    },
+    "/api/admin/control-plane/lines/{id}/migrations": {
+      "get": {
+        "operationId": "DedicatedLineMigrationsController_list",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "DedicatedLineMigrations"
+        ]
+      },
+      "post": {
+        "operationId": "DedicatedLineMigrationsController_create",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "DedicatedLineMigrations"
+        ]
+      }
+    },
+    "/api/admin/control-plane/lines/{id}/migrations/{migrationId}": {
+      "get": {
+        "operationId": "DedicatedLineMigrationsController_get",
+        "parameters": [
+          {
+            "name": "migrationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "DedicatedLineMigrations"
+        ]
+      }
+    },
+    "/api/admin/control-plane/lines/{id}/migrations/{migrationId}/commit": {
+      "post": {
+        "operationId": "DedicatedLineMigrationsController_commit",
+        "parameters": [
+          {
+            "name": "migrationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "DedicatedLineMigrations"
+        ]
+      }
+    },
+    "/api/admin/control-plane/lines/{id}/migrations/{migrationId}/cancel": {
+      "post": {
+        "operationId": "DedicatedLineMigrationsController_cancel",
+        "parameters": [
+          {
+            "name": "migrationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "DedicatedLineMigrations"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "IPEasy Platform API",
+    "description": "",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "apikey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "apikey"
+      },
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "CreateDedicatedLineOrderDto": {
+        "type": "object",
+        "properties": {
+          "skuCode": {
+            "type": "string",
+            "description": "Catalog SKU code, for example SV or ZB"
+          },
+          "countryCode": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "durationDays": {
+            "type": "number"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "regionCode": {
+            "type": "string"
+          },
+          "businessType": {
+            "type": "string",
+            "description": "Provider business code, only when the configured SKU contract requires it"
+          }
+        },
+        "required": [
+          "skuCode",
+          "countryCode",
+          "quantity",
+          "durationDays",
+          "currency",
+          "idempotencyKey"
+        ]
+      },
+      "CreateStaticProxyOrderDto": {
+        "type": "object",
+        "properties": {
+          "resourceId": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "durationDays": {
+            "type": "number"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "businessType": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "resourceId",
+          "quantity",
+          "durationDays",
+          "currency",
+          "idempotencyKey"
+        ]
+      },
+      "AdminCreateStaticProxyOrderDto": {
+        "type": "object",
+        "properties": {
+          "resourceId": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "durationDays": {
+            "type": "number"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "businessType": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Operator reason recorded in audit logs"
+          }
+        },
+        "required": [
+          "resourceId",
+          "quantity",
+          "durationDays",
+          "currency",
+          "idempotencyKey",
+          "reason"
+        ]
+      },
+      "AdminOrderOperationDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "description": "Operator reason recorded in audit logs"
+          }
+        }
+      },
+      "AdminOrderOperationWalletDto": {
+        "type": "object",
+        "properties": {
+          "available": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "available",
+          "currency"
+        ]
+      },
+      "AdminOrderOperationResultDto": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "fulfillmentJobId": {
+            "type": "string"
+          },
+          "wallet": {
+            "$ref": "#/components/schemas/AdminOrderOperationWalletDto"
+          }
+        },
+        "required": [
+          "orderId",
+          "status"
+        ]
+      },
+      "RequiredAdminOrderOperationDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "description": "Operator reason recorded in audit logs"
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      },
+      "BusinessListDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "InventoryQueryDto": {
+        "type": "object",
+        "properties": {
+          "resource_id": {
+            "type": "string"
+          }
+        }
+      },
+      "CalculateDto": {
+        "type": "object",
+        "properties": {
+          "resource_id": {
+            "type": "string"
+          },
+          "duration_days": {
+            "oneOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "quantity": {
+            "oneOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "currency": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "resource_id",
+          "duration_days",
+          "quantity",
+          "currency"
+        ]
+      },
+      "BuyDto": {
+        "type": "object",
+        "properties": {
+          "resource_id": {
+            "type": "string"
+          },
+          "quantity": {
+            "oneOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "duration_days": {
+            "oneOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "currency": {
+            "type": "string"
+          },
+          "idempotency_key": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "resource_id",
+          "quantity",
+          "duration_days",
+          "currency",
+          "idempotency_key"
+        ]
+      },
+      "RenewDto": {
+        "type": "object",
+        "properties": {
+          "proxy_id": {
+            "type": "string"
+          },
+          "duration_days": {
+            "oneOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "idempotency_key": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "proxy_id",
+          "duration_days"
+        ]
+      },
+      "OrderResultDto": {
+        "type": "object",
+        "properties": {
+          "order_no": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "order_no"
+        ]
+      },
+      "OrderListDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "oneOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "page_size": {
+            "oneOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "IpListDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "oneOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "page_size": {
+            "oneOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "status": {
+            "type": "string"
+          },
+          "country_code": {
+            "type": "string"
+          },
+          "search": {
+            "type": "string"
+          },
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          }
+        }
+      },
+      "IpExportDto": {
+        "type": "object",
+        "properties": {
+          "format": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "country_code": {
+            "type": "string"
+          },
+          "search": {
+            "type": "string"
+          },
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          }
+        }
+      },
+      "IpDetailDto": {
+        "type": "object",
+        "properties": {
+          "proxy_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "proxy_id"
+        ]
+      },
+      "ChangeAuthDto": {
+        "type": "object",
+        "properties": {
+          "proxy_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "proxy_id"
+        ]
+      },
+      "SwitchIpListDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "oneOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "page_size": {
+            "oneOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          }
+        }
+      },
+      "SwitchIpDto": {
+        "type": "object",
+        "properties": {
+          "proxy_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "proxy_id"
+        ]
+      },
+      "WalletRecordsDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "oneOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "page_size": {
+            "oneOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          }
+        }
+      },
+      "TenantListItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "siteId": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "SUSPENDED",
+              "CLOSED"
+            ]
+          },
+          "customerCount": {
+            "type": "number"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "siteId",
+          "code",
+          "name",
+          "status",
+          "customerCount",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "TenantPageDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number"
+          },
+          "pageSize": {
+            "type": "number"
+          },
+          "total": {
+            "type": "number"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TenantListItemDto"
+            }
+          }
+        },
+        "required": [
+          "page",
+          "pageSize",
+          "total",
+          "items"
+        ]
+      },
+      "CreateTenantDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "adminEmail": {
+            "type": "string"
+          },
+          "adminPassword": {
+            "type": "string",
+            "minLength": 8
+          }
+        },
+        "required": [
+          "code",
+          "name",
+          "adminEmail",
+          "adminPassword"
+        ]
+      },
+      "CreateSelfServiceTenantDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "name"
+        ]
+      },
+      "SelfServiceTenantResponseDto": {
+        "type": "object",
+        "properties": {
+          "tenant": {
+            "$ref": "#/components/schemas/TenantListItemDto"
+          }
+        },
+        "required": [
+          "tenant"
+        ]
+      },
+      "TenantStatsDto": {
+        "type": "object",
+        "properties": {
+          "customerCount": {
+            "type": "number"
+          },
+          "orderCount": {
+            "type": "number"
+          },
+          "monthlyOrders": {
+            "type": "number"
+          },
+          "totalBalance": {
+            "type": "string"
+          },
+          "balanceByCurrency": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "customerCount",
+          "orderCount",
+          "monthlyOrders",
+          "totalBalance",
+          "balanceByCurrency"
+        ]
+      },
+      "TenantDetailDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "siteId": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "SUSPENDED",
+              "CLOSED"
+            ]
+          },
+          "customerCount": {
+            "type": "number"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "orderCount": {
+            "type": "number"
+          },
+          "monthlyOrders": {
+            "type": "number"
+          },
+          "totalBalance": {
+            "type": "string"
+          },
+          "balanceByCurrency": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "stats": {
+            "$ref": "#/components/schemas/TenantStatsDto"
+          }
+        },
+        "required": [
+          "id",
+          "siteId",
+          "code",
+          "name",
+          "status",
+          "customerCount",
+          "createdAt",
+          "updatedAt",
+          "orderCount",
+          "monthlyOrders",
+          "totalBalance",
+          "balanceByCurrency"
+        ]
+      },
+      "UpdateTenantStatusDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "SUSPENDED"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "TenantBrandDto": {
+        "type": "object",
+        "properties": {
+          "tenantId": {
+            "type": "string"
+          },
+          "siteName": {
+            "type": "string"
+          },
+          "logoUrl": {
+            "type": "string"
+          },
+          "primaryColor": {
+            "type": "string"
+          },
+          "customDomain": {
+            "type": "string"
+          },
+          "supportEmail": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "tenantId",
+          "siteName"
+        ]
+      },
+      "UpdateTenantBrandConfigDto": {
+        "type": "object",
+        "properties": {
+          "siteName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "logoUrl": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 2048
+          },
+          "primaryColor": {
+            "type": "string",
+            "nullable": true,
+            "pattern": "^#[0-9A-Fa-f]{6}$"
+          },
+          "customDomain": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 253
+          },
+          "supportEmail": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 254
+          }
+        },
+        "required": [
+          "siteName"
+        ]
+      },
+      "TenantProviderAccountDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "siteId": {
+            "type": "string"
+          },
+          "tenantId": {
+            "type": "string"
+          },
+          "providerCode": {
+            "type": "string",
+            "enum": [
+              "IPIPD",
+              "NINE_EIGHT_FIVE",
+              "PR"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "DISABLED"
+            ]
+          },
+          "baseUrl": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "inventorySyncEnabled": {
+            "type": "boolean"
+          },
+          "enabledCountryCodes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "availableCountries": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "siteId",
+          "tenantId",
+          "providerCode",
+          "status",
+          "baseUrl",
+          "timeoutMs",
+          "inventorySyncEnabled",
+          "enabledCountryCodes",
+          "availableCountries",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "CreateTenantProviderAccountDto": {
+        "type": "object",
+        "properties": {
+          "providerCode": {
+            "type": "string",
+            "enum": [
+              "IPIPD",
+              "NINE_EIGHT_FIVE",
+              "PR"
+            ]
+          },
+          "credential": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "baseUrl": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "inventorySyncEnabled": {
+            "type": "boolean"
+          },
+          "enabledCountryCodes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "providerCode",
+          "credential",
+          "baseUrl"
+        ]
+      },
+      "UpdateTenantProviderAccountDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "DISABLED"
+            ]
+          },
+          "credential": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "baseUrl": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "number"
+          },
+          "inventorySyncEnabled": {
+            "type": "boolean"
+          },
+          "enabledCountryCodes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "UpdateSiteDomainDto": {
+        "type": "object",
+        "properties": {
+          "domain": {
+            "type": "string",
+            "example": "365proxy.example.com"
+          }
+        },
+        "required": [
+          "domain"
+        ]
+      },
+      "DedicatedLineLifecycleResultDto": {
+        "type": "object",
+        "properties": {
+          "lineId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "desiredVersion": {
+            "type": "number"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "replayed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "lineId",
+          "status",
+          "desiredVersion",
+          "expiresAt",
+          "replayed"
+        ]
+      },
+      "UpdateDedicatedLineLimitsDto": {
+        "type": "object",
+        "properties": {
+          "trafficLimitBytes": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 9007199254740991,
+            "description": "Total traffic quota in bytes; 0 means unlimited."
+          },
+          "uplinkLimitBps": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 9007199254740991,
+            "description": "Uplink bytes per second; 0 means unlimited."
+          },
+          "downlinkLimitBps": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 9007199254740991,
+            "description": "Downlink bytes per second; 0 means unlimited."
+          },
+          "maxConnections": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 2147483647,
+            "description": "Concurrent connection limit; 0 means unlimited."
+          },
+          "ipLimit": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 2147483647,
+            "description": "Distinct client IP limit; 0 means unlimited."
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "trafficLimitBytes",
+          "uplinkLimitBps",
+          "downlinkLimitBps",
+          "maxConnections",
+          "ipLimit",
+          "reason"
+        ]
+      },
+      "DedicatedLineLimitUpdateValuesDto": {
+        "type": "object",
+        "properties": {
+          "trafficLimitBytes": {
+            "type": "number"
+          },
+          "uplinkLimitBps": {
+            "type": "number"
+          },
+          "downlinkLimitBps": {
+            "type": "number"
+          },
+          "maxConnections": {
+            "type": "number"
+          },
+          "ipLimit": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "trafficLimitBytes",
+          "uplinkLimitBps",
+          "downlinkLimitBps",
+          "maxConnections",
+          "ipLimit"
+        ]
+      },
+      "DedicatedLineLimitsResultDto": {
+        "type": "object",
+        "properties": {
+          "lineId": {
+            "type": "string"
+          },
+          "desiredVersion": {
+            "type": "number"
+          },
+          "limits": {
+            "$ref": "#/components/schemas/DedicatedLineLimitUpdateValuesDto"
+          },
+          "replayed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "lineId",
+          "desiredVersion",
+          "limits",
+          "replayed"
+        ]
+      },
+      "DedicatedLineLimitCustomerDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "name": {
+            "type": "object",
+            "nullable": true
+          }
+        },
+        "required": [
+          "email",
+          "name"
+        ]
+      },
+      "DedicatedLineLimitSkuDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "name"
+        ]
+      },
+      "DedicatedLineLimitValuesDto": {
+        "type": "object",
+        "properties": {
+          "trafficLimitBytes": {
+            "type": "string",
+            "description": "Total traffic quota in bytes; 0 means unlimited."
+          },
+          "uplinkLimitBps": {
+            "type": "string",
+            "description": "Uplink bytes per second; 0 means unlimited."
+          },
+          "downlinkLimitBps": {
+            "type": "string",
+            "description": "Downlink bytes per second; 0 means unlimited."
+          },
+          "maxConnections": {
+            "type": "number"
+          },
+          "ipLimit": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "trafficLimitBytes",
+          "uplinkLimitBps",
+          "downlinkLimitBps",
+          "maxConnections",
+          "ipLimit"
+        ]
+      },
+      "DedicatedLineProjectionReadinessDto": {
+        "type": "object",
+        "properties": {
+          "ready": {
+            "type": "number"
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "ready",
+          "total"
+        ]
+      },
+      "DedicatedLineLimitSummaryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "tenantId": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "countryCode": {
+            "type": "string"
+          },
+          "protocol": {
+            "type": "string"
+          },
+          "desiredVersion": {
+            "type": "number"
+          },
+          "customer": {
+            "$ref": "#/components/schemas/DedicatedLineLimitCustomerDto"
+          },
+          "sku": {
+            "$ref": "#/components/schemas/DedicatedLineLimitSkuDto"
+          },
+          "inboundTag": {
+            "type": "string"
+          },
+          "limits": {
+            "$ref": "#/components/schemas/DedicatedLineLimitValuesDto"
+          },
+          "projections": {
+            "$ref": "#/components/schemas/DedicatedLineProjectionReadinessDto"
+          }
+        },
+        "required": [
+          "id",
+          "tenantId",
+          "userId",
+          "status",
+          "countryCode",
+          "protocol",
+          "desiredVersion",
+          "customer",
+          "sku",
+          "inboundTag",
+          "limits",
+          "projections"
+        ]
+      },
+      "DedicatedLineLimitPageDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number"
+          },
+          "pageSize": {
+            "type": "number"
+          },
+          "total": {
+            "type": "number"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DedicatedLineLimitSummaryDto"
+            }
+          }
+        },
+        "required": [
+          "page",
+          "pageSize",
+          "total",
+          "items"
+        ]
+      }
+    }
+  }
+}

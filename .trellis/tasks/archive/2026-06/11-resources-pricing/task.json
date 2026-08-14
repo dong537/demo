@@ -1,0 +1,25 @@
+{
+  "id": "11-resources-pricing",
+  "title": "资源树 / 库存快照 / 价格系统",
+  "description": "实现 PlatformResource 树、InventorySnapshot、ResourceMapping、价格优先级链（PriceTemplate > PriceRule > PriceOverride），提供 quote use case 和 Admin 管理 API。",
+  "status": "completed",
+  "priority": "P0",
+  "phase": 2,
+  "dependsOn": [
+    "10-provider-adapter"
+  ],
+  "files": [
+    "packages/db/prisma/schema.prisma",
+    "apps/api/src/modules/resources/resources.module.ts",
+    "apps/api/src/modules/resources/resources.controller.ts",
+    "apps/api/src/modules/resources/resources.repository.ts",
+    "apps/api/src/modules/resources/use-cases/sync-inventory.use-case.ts",
+    "apps/api/src/modules/pricing/pricing.module.ts",
+    "apps/api/src/modules/pricing/pricing.controller.ts",
+    "apps/api/src/modules/pricing/pricing.repository.ts",
+    "apps/api/src/modules/pricing/use-cases/quote.use-case.ts",
+    "apps/api/src/modules/pricing/domain.ts"
+  ],
+  "createdAt": "2026-06-07",
+  "completedAt": "2026-06-08"
+}

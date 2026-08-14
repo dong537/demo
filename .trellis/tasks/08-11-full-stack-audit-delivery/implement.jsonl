@@ -1,0 +1,16 @@
+{"file":".trellis/spec/architecture.md","reason":"控制面 Module 边界、Source of Truth 与 Adapter 设计约束"}
+{"file":".trellis/spec/api-contract.md","reason":"统一 API envelope、错误和外部 Adapter 契约"}
+{"file":".trellis/spec/database.md","reason":"项目级 Prisma/PostgreSQL 数据和迁移规则"}
+{"file":".trellis/spec/security-permissions.md","reason":"site/tenant/user 隔离、凭据和高危操作约束"}
+{"file":".trellis/spec/testing-deployment.md","reason":"真实测试、构建和部署验证入口"}
+{"file":".trellis/spec/backend/index.md","reason":"后端规范索引与 pre-development checklist"}
+{"file":".trellis/spec/backend/database-guidelines.md","reason":"Prisma scope、事务、迁移和幂等约束"}
+{"file":".trellis/spec/backend/error-handling.md","reason":"AppError 和稳定 reasonKey 约束"}
+{"file":".trellis/spec/backend/logging-guidelines.md","reason":"结构化日志与外部请求脱敏"}
+{"file":".trellis/spec/backend/quality-guidelines.md","reason":"后端测试和禁止模式"}
+{"file":".trellis/spec/backend/directory-structure.md","reason":"Nest Module、Provider Adapter 与 worker ownership"}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"数据库到 Adapter/worker 的跨层数据流检查"}
+{"file":".trellis/tasks/08-11-full-stack-audit-delivery/research/current-state-audit.md","reason":"现有静态代理边界、阻断缺口和已确认风险"}
+{"file":".trellis/tasks/08-11-full-stack-audit-delivery/research/official-integration-boundary.md","reason":"3x-ui/Xray/Zeabur 官方能力边界"}
+{"file": ".trellis/tasks/08-11-full-stack-audit-delivery/design/active-active-dedicated-line-control-plane.md", "reason": "主动-主动副本、NY 外部确认、库存 Saga、限速和安全的权威设计"}
+{"file":".trellis/tasks/08-11-full-stack-audit-delivery/research/phase-1-backend-verification.md","reason":"Phase 1 SKU 目录、报价和静态购买禁售的已实现边界与未验证项"}

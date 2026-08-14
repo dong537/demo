@@ -1,0 +1,71 @@
+{
+  "smoke": "passed",
+  "contract": {
+    "staticResidential": "hidden-and-disabled-by-capability",
+    "dynamicResidential": "legacy-display-only-no-purchase-request",
+    "dedicated": "visible-and-loaded"
+  },
+  "knownRisks": [
+    "Google Fonts may fail and fall back to system fonts",
+    "Original 320/390 mobile header has visible crowding; frontend bytes intentionally unchanged"
+  ],
+  "checks": [
+    {
+      "viewport": "desktop-1440x900",
+      "finalUrl": "https://frontend-test-a8da.up.railway.app/proxy/dedicated/buy",
+      "title": "专线购买 - 365Proxy",
+      "dedicatedPageVisible": true,
+      "staticResidentialVisible": false,
+      "dynamicDisplayVisible": true,
+      "horizontalOverflow": false,
+      "coreFailures": [],
+      "allowedExternalFailures": [
+        {
+          "kind": "requestfailed",
+          "url": "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap",
+          "resourceType": "stylesheet",
+          "error": "net::ERR_CONNECTION_CLOSED"
+        }
+      ],
+      "screenshot": ".trellis/tasks/08-11-full-stack-audit-delivery/evidence/railway-online-smoke/desktop-1440x900.png"
+    },
+    {
+      "viewport": "mobile-390x844",
+      "finalUrl": "https://frontend-test-a8da.up.railway.app/proxy/dedicated/buy",
+      "title": "专线购买 - 365Proxy",
+      "dedicatedPageVisible": true,
+      "staticResidentialVisible": false,
+      "dynamicDisplayVisible": false,
+      "horizontalOverflow": false,
+      "coreFailures": [],
+      "allowedExternalFailures": [
+        {
+          "kind": "requestfailed",
+          "url": "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap",
+          "resourceType": "stylesheet",
+          "error": "net::ERR_CONNECTION_CLOSED"
+        }
+      ],
+      "screenshot": ".trellis/tasks/08-11-full-stack-audit-delivery/evidence/railway-online-smoke/mobile-390x844.png"
+    },
+    {
+      "viewport": "mobile-320x844",
+      "finalUrl": "https://frontend-test-a8da.up.railway.app/proxy/dedicated/buy",
+      "title": "专线购买 - 365Proxy",
+      "dedicatedPageVisible": true,
+      "staticResidentialVisible": false,
+      "dynamicDisplayVisible": false,
+      "horizontalOverflow": false,
+      "coreFailures": [],
+      "allowedExternalFailures": [
+        {
+          "kind": "requestfailed",
+          "url": "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap",
+          "resourceType": "stylesheet",
+          "error": "net::ERR_CONNECTION_CLOSED"
+        }
+      ],
+      "screenshot": ".trellis/tasks/08-11-full-stack-audit-delivery/evidence/railway-online-smoke/mobile-320x844.png"
+    }
+  ]
+}

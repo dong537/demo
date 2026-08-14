@@ -1,0 +1,31 @@
+{
+  "name": "ipeasy-platform",
+  "private": true,
+  "scripts": {
+    "build": "pnpm --filter @ipeasy/db generate && turbo run build",
+    "start": "node apps/api/dist/main",
+    "typecheck": "pnpm --filter @ipeasy/db generate && turbo run typecheck",
+    "lint": "pnpm --filter @ipeasy/db generate && turbo run lint",
+    "test": "pnpm --filter @ipeasy/db generate && turbo run test",
+    "test:security": "node --test scripts/secret-scan.spec.mjs",
+    "test:operations": "node --test scripts/release-metadata.spec.mjs scripts/postgres-maintenance.spec.mjs scripts/frozen-frontend-lib.spec.mjs scripts/railway-web-config.spec.mjs",
+    "security:secrets": "node scripts/secret-scan.mjs",
+    "db:backup": "node scripts/backup-postgres.mjs",
+    "db:restore": "node scripts/restore-postgres.mjs",
+    "release:manifest": "node scripts/release-metadata.mjs",
+    "frontend:frozen:verify": "node scripts/fetch-frozen-frontend.mjs --verify frozen/frontend-railway-6f71aaa1",
+    "e2e": "turbo run e2e",
+    "dev": "turbo run dev",
+    "predeploy:check": "node scripts/predeploy-check.mjs",
+    "deploy:railway": "node scripts/deploy-railway.mjs"
+  },
+  "devDependencies": {
+    "turbo": "2.3.3",
+    "pnpm": "10.34.5"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "packageManager": "pnpm@10.34.5"
+}

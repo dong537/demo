@@ -1,0 +1,58 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+!frozen/frontend-railway-6f71aaa1/dist/
+!frozen/frontend-railway-6f71aaa1/dist/**
+build/
+coverage/
+.turbo/
+.vite/
+.next/
+out/
+
+# Runtime and logs
+*.log
+logs/
+tmp/
+temp/
+.cache/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Databases and local state
+*.db
+*.sqlite
+*.sqlite3
+backups/
+artifacts/
+packages/db/generated/
+postgres-data/
+redis-data/
+
+# Test artifacts
+playwright-report/
+test-results/
+*-check.png
+*-scan.png
+railway-*.png
+
+# Local reference source snapshots
+IPIPD-Permit/
+
+# Temporary Railway CLI deployment shim. Package configs under apps/* stay tracked.
+/railway.json
+
+# IDE and OS noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Trellis runtime cache, keep specs/tasks/workspace tracked
+.trellis/cache/

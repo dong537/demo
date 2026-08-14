@@ -1,0 +1,7 @@
+{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/spec/frontend/index.md", "reason": "公开首页路由、组件和样式需要遵循前端规范"}
+{"file": ".trellis/spec/testing-deployment.md", "reason": "需要部署到 Railway 并按 smoke 验证"}
+{"file": "apps/web/src/routes/public/home.tsx", "reason": "public homepage component"}
+{"file": "apps/web/src/routes/public/home.css", "reason": "public homepage isolated styles"}
+{"file": "apps/web/src/app/router.tsx", "reason": "root route now public homepage"}
+{"file": "apps/web/index.html", "reason": "default title changed to IPEasy"}

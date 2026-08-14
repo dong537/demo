@@ -1,0 +1,1 @@
+import{r as e}from"./index-D-BZDcpl.js";function n(r){return e({url:"/orders",method:"get",params:r})}function o(r){return e({url:"/orders/admin/all",method:"get",params:r})}function s(r){return e({url:`/orders/${r}/cancel`,method:"patch"})}function u(r){return e({url:"/event-logs/my",method:"get",params:r})}export{u as a,o as b,s as c,n as g};

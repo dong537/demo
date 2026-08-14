@@ -1,0 +1,1 @@
+import{_ as e}from"./_plugin-vue_export-helper-DlAUqK2U.js";import{L as t,M as r,a1 as a,at as n}from"./vue-vendor-0nF-KX2D.js";import"./vendor-D2EO2nDC.js";import"./echarts-BeJDrtA2.js";const c={},s={class:"landing-layout"};function _(i,d){const o=n("router-view");return t(),r("div",s,[a(o)])}const u=e(c,[["render",_],["__scopeId","data-v-55904801"]]);export{u as default};

@@ -1,0 +1,24 @@
+{
+  "id": "08-customer-min-pages",
+  "title": "Customer 最小页面",
+  "description": "实现 Customer surface 最小页面：登录、余额概览、充值单创建、钱包流水。数据来自真实 API，所有状态（loading/empty/error/permission）完整实现。",
+  "status": "completed",
+  "priority": "P1",
+  "phase": 2,
+  "dependsOn": [
+    "07-admin-min-pages"
+  ],
+  "files": [
+    "apps/web/src/routes/customer/_layout.tsx",
+    "apps/web/src/routes/customer/login.tsx",
+    "apps/web/src/routes/customer/overview.tsx",
+    "apps/web/src/routes/customer/wallet/index.tsx",
+    "apps/web/src/routes/customer/wallet/topup.tsx",
+    "apps/web/src/features/auth/customer-login.feature.tsx",
+    "apps/web/src/features/wallet/customer-wallet-overview.feature.tsx",
+    "apps/web/src/features/wallet/customer-ledger-list.feature.tsx",
+    "apps/web/src/features/wallet/create-payment-order.feature.tsx"
+  ],
+  "createdAt": "2026-06-06",
+  "completedAt": "2026-06-08"
+}

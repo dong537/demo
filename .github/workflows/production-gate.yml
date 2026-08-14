@@ -1,0 +1,106 @@
+name: production-gate
+
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-gate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: ipipx
+          POSTGRES_PASSWORD: ipipx
+          POSTGRES_DB: ipipx
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ipipx -d ipipx"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://ipipx:ipipx@localhost:5432/ipipx
+      DATABASE_URL_TEST: postgresql://ipipx:ipipx@localhost:5432/ipipx
+      REDIS_URL: redis://localhost:6379
+      APP_ENCRYPTION_KEY: '0000000000000000000000000000000000000000000000000000000000000000'
+      JWT_SECRET: synthetic-ci-jwt-secret
+      APP_PLATFORM_CURRENCY: CNY
+      RELEASE_GIT_SHA: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.34.5
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @ipeasy/db migrate:deploy
+      - run: pnpm test:security
+      - run: pnpm test:operations
+      - run: pnpm frontend:frozen:verify
+      - run: pnpm security:secrets
+      - run: pnpm audit --prod --audit-level high --registry=https://registry.npmjs.org
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm --filter @ipeasy/api test
+      - run: pnpm --filter @ipeasy/worker test
+      - run: pnpm --filter @ipeasy/web test
+      - run: pnpm --filter @ipeasy/api test:integration
+      - run: pnpm build
+      - run: pnpm --filter @ipeasy/web exec playwright install --with-deps chromium
+      - run: pnpm e2e
+
+  images:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: quality
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build immutable service images
+        run: |
+          docker build --build-arg RELEASE_GIT_SHA="$GITHUB_SHA" -f Dockerfile.api -t ipeasy-api:"$GITHUB_SHA" .
+          docker build --build-arg RELEASE_GIT_SHA="$GITHUB_SHA" -f Dockerfile.worker -t ipeasy-worker:"$GITHUB_SHA" .
+          docker build --build-arg RELEASE_GIT_SHA="$GITHUB_SHA" -f Dockerfile.web -t ipeasy-web:"$GITHUB_SHA" .
+      - name: Capture image digests
+        run: |
+          echo "RELEASE_API_IMAGE_DIGEST=$(docker image inspect --format '{{.Id}}' ipeasy-api:$GITHUB_SHA)" >> "$GITHUB_ENV"
+          echo "RELEASE_WORKER_IMAGE_DIGEST=$(docker image inspect --format '{{.Id}}' ipeasy-worker:$GITHUB_SHA)" >> "$GITHUB_ENV"
+          echo "RELEASE_WEB_IMAGE_DIGEST=$(docker image inspect --format '{{.Id}}' ipeasy-web:$GITHUB_SHA)" >> "$GITHUB_ENV"
+      - name: Write release manifest
+        env:
+          RELEASE_GIT_SHA: ${{ github.sha }}
+        run: node scripts/release-metadata.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-manifest-${{ github.sha }}
+          path: artifacts/release-manifest.json
+          if-no-files-found: error
+          retention-days: 90

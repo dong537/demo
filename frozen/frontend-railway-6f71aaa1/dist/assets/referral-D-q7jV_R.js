@@ -1,0 +1,1 @@
+import{r}from"./index-D-BZDcpl.js";function a(){return r({url:"/referral/my",method:"get"})}function l(){return r({url:"/referral/history",method:"get"})}function o(){return r({url:"/referral/withdrawals",method:"get"})}function f(e){return r({url:"/referral/withdraw",method:"post",data:e})}export{l as a,o as b,a as g,f as w};

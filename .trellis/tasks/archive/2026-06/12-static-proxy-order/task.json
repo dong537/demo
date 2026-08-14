@@ -1,0 +1,31 @@
+{
+  "id": "12-static-proxy-order",
+  "title": "静态代理下单 / 履约闭环",
+  "description": "实现静态住宅代理购买 use case：报价确认 -> 事务内扣余额+建订单+建履约任务 -> worker 调用 Provider Adapter -> 写 proxy_instances -> 交付给用户。包含续费/改密/切 IP 生命周期操作。",
+  "status": "completed",
+  "priority": "P0",
+  "phase": 2,
+  "dependsOn": [
+    "11-resources-pricing"
+  ],
+  "files": [
+    "packages/db/prisma/schema.prisma",
+    "apps/api/src/modules/orders/orders.module.ts",
+    "apps/api/src/modules/orders/orders.controller.ts",
+    "apps/api/src/modules/orders/orders.repository.ts",
+    "apps/api/src/modules/orders/use-cases/create-static-proxy-order.use-case.ts",
+    "apps/api/src/modules/fulfillment/fulfillment.module.ts",
+    "apps/api/src/modules/fulfillment/fulfillment.service.ts",
+    "apps/api/src/modules/fulfillment/use-cases/fulfill-static-proxy.use-case.ts",
+    "apps/api/src/modules/proxies/proxies.module.ts",
+    "apps/api/src/modules/proxies/proxies.controller.ts",
+    "apps/api/src/modules/proxies/proxies.repository.ts",
+    "apps/api/src/modules/proxies/use-cases/renew-proxy.use-case.ts",
+    "apps/api/src/modules/proxies/use-cases/change-password.use-case.ts",
+    "apps/api/src/modules/proxies/use-cases/switch-ip.use-case.ts",
+    "apps/worker/src/main.ts",
+    "apps/worker/src/fulfillment-worker.ts"
+  ],
+  "createdAt": "2026-06-07",
+  "completedAt": "2026-06-08"
+}

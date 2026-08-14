@@ -1,0 +1,30 @@
+{
+  "id": "optimize-route-navigation",
+  "name": "optimize-route-navigation",
+  "title": "优化页面路由跳转速度",
+  "description": "让管理端和用户端同会话页面切换复用当前用户校验结果，减少重复 /api/auth/me 请求。",
+  "status": "completed",
+  "dev_type": "frontend",
+  "scope": "web",
+  "package": "apps/web",
+  "priority": "P2",
+  "creator": "rewrite-residential-proxy-platform",
+  "assignee": "rewrite-residential-proxy-platform",
+  "createdAt": "2026-06-10",
+  "completedAt": "2026-06-12",
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    "apps/web/src/shared/auth/current-user.ts",
+    "apps/web/src/app/router.tsx",
+    ".trellis/spec/frontend/state-management.md"
+  ],
+  "notes": "Implementation was completed in earlier frontend commits; task record preserved for Trellis context.",
+  "meta": {}
+}

@@ -1,0 +1,30 @@
+{
+  "id": "09-tests-phase1",
+  "title": "第一阶段测试覆盖",
+  "description": "为权限、资金、错误传播编写第一阶段必测用例。覆盖 Domain 单元测试、Use Case 集成测试（真实测试库）、Supertest API 测试、前端路由守卫测试，以及 Playwright E2E smoke。",
+  "status": "completed",
+  "priority": "P0",
+  "phase": 1,
+  "dependsOn": [
+    "05-auth-apikey-rbac",
+    "06-wallet-payment-ledger",
+    "07-admin-min-pages",
+    "08-customer-min-pages"
+  ],
+  "files": [
+    "apps/api/src/common/auth/tests/guards.spec.ts",
+    "apps/api/src/common/money/tests/money.spec.ts",
+    "apps/api/src/modules/wallet/tests/wallet-domain.spec.ts",
+    "apps/api/src/modules/wallet/tests/wallet-integration.spec.ts",
+    "apps/api/src/modules/payments/tests/payments-integration.spec.ts",
+    "apps/api/src/modules/auth/tests/auth-integration.spec.ts",
+    "apps/web/src/features/auth/tests/admin-login.spec.tsx",
+    "apps/web/src/features/wallet/tests/customer-wallet.spec.tsx",
+    "e2e/admin-login.spec.ts",
+    "e2e/customer-topup.spec.ts",
+    "vitest.config.ts",
+    "playwright.config.ts"
+  ],
+  "createdAt": "2026-06-06",
+  "completedAt": "2026-06-08"
+}

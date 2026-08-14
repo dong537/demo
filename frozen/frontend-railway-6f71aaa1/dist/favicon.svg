@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!--
+    365Proxy futuristic lightning favicon.
+    - radial backplate: cyan → electric violet → deep navy (neon-nebula feel)
+    - orbit rings hint at the routing / proxy grid underneath
+    - asymmetric bolt with white-hot inner core + cyan glow halo
+    - subtle glass highlight on top-left for depth
+  -->
+  <defs>
+    <radialGradient id="bg" cx="35%" cy="30%" r="80%">
+      <stop offset="0%"   stop-color="#4DE8FF"/>
+      <stop offset="55%"  stop-color="#6B5BFF"/>
+      <stop offset="100%" stop-color="#0B1438"/>
+    </radialGradient>
+    <linearGradient id="bolt" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"   stop-color="#FFFFFF"/>
+      <stop offset="55%"  stop-color="#CFFBFF"/>
+      <stop offset="100%" stop-color="#58E0FF"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="1.4" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- backplate -->
+  <circle cx="32" cy="32" r="30" fill="url(#bg)"/>
+
+  <!-- faint rim -->
+  <circle cx="32" cy="32" r="30" fill="none" stroke="#9FF3FF" stroke-opacity="0.35" stroke-width="1"/>
+
+  <!-- orbit rings (routing grid) -->
+  <g stroke="#A9F0FF" stroke-opacity="0.18" fill="none">
+    <ellipse cx="32" cy="32" rx="22" ry="9" transform="rotate(-20 32 32)"/>
+    <ellipse cx="32" cy="32" rx="22" ry="9" transform="rotate(20 32 32)"/>
+  </g>
+
+  <!-- outer bolt glow halo -->
+  <path d="M36 9 L18 36 L29 36 L25 56 L48 27 L36 27 Z"
+        fill="#58E0FF" opacity="0.35" filter="url(#glow)"/>
+
+  <!-- main bolt -->
+  <path d="M36 10 L19 35 L29 35 L26 54 L47 28 L36 28 Z"
+        fill="url(#bolt)" stroke="#E8FCFF" stroke-width="0.5"
+        stroke-linejoin="round"/>
+
+  <!-- hot white core streak -->
+  <path d="M34 14 L24 32 L30 32 L28 46"
+        fill="none" stroke="#FFFFFF" stroke-width="1.2"
+        stroke-linecap="round" stroke-opacity="0.9"/>
+
+  <!-- top glass highlight -->
+  <ellipse cx="24" cy="18" rx="12" ry="5" fill="#FFFFFF" opacity="0.12"/>
+</svg>

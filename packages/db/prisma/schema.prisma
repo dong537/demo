@@ -1,0 +1,1871 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SiteStatus {
+  ACTIVE
+  MAINTENANCE
+  DISABLED
+}
+
+enum TenantStatus {
+  ACTIVE
+  SUSPENDED
+  CLOSED
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  BANNED
+}
+
+enum KycStatus {
+  NONE
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum RiskStatus {
+  NORMAL
+  FLAGGED
+  BLOCKED
+}
+
+enum AdminRole {
+  PLATFORM_ADMIN
+  TENANT_ADMIN
+  OPERATOR
+}
+
+enum AdminStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum OwnerType {
+  USER
+  ADMIN_USER
+}
+
+enum ApiKeyOwnerType {
+  USER
+  TENANT_ADMIN
+}
+
+enum ApiKeyStatus {
+  ACTIVE
+  REVOKED
+}
+
+enum LedgerEntryType {
+  DEPOSIT
+  DEBIT
+  REFUND
+  ADJUSTMENT
+  FREEZE
+  UNFREEZE
+  RENEWAL
+  COMMISSION
+}
+
+enum PaymentChannel {
+  MANUAL
+  YIPAY
+  ALIPAY
+}
+
+enum PaymentOrderStatus {
+  PENDING
+  CONFIRMING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum AuditActorType {
+  USER
+  ADMIN_USER
+  SYSTEM
+  APIKEY
+}
+
+enum TicketStatus {
+  OPEN
+  PENDING
+  CLOSED
+}
+
+enum TicketMessageAuthorType {
+  USER
+  ADMIN_USER
+}
+
+enum DedicatedLineStatus {
+  PENDING_PAYMENT
+  QUEUED
+  PROVISIONING
+  ACTIVE
+  DEGRADED
+  SUSPENDED
+  EXPIRED
+  MIGRATING_AWAITING_ROUTE_IMPORT
+  CANCELLING
+  CANCELLED
+  FAILED
+}
+
+enum DedicatedLineProtocol {
+  VLESS
+  VMESS
+  MIXED
+}
+
+enum PlacementMode {
+  ACTIVE_ACTIVE
+  HOT_STANDBY
+}
+
+enum ControlNodeStatus {
+  ACTIVE
+  DRAINING
+  DISABLED
+}
+
+enum ProjectionStatus {
+  PENDING
+  APPLYING
+  READY
+  FAILED
+  DELETING
+  DELETED
+}
+
+enum ResidentialExitStatus {
+  AVAILABLE
+  RESERVED
+  ASSIGNED
+  QUARANTINED
+  EXPIRED
+  RELEASED
+}
+
+enum ExitAssignmentStatus {
+  ACTIVE
+  RELEASING
+  RELEASED
+}
+
+enum LineDomainRole {
+  PRIMARY
+  BACKUP
+}
+
+enum LineDomainStatus {
+  ACTIVE
+  RETIRED
+}
+
+enum DedicatedLineMigrationType {
+  NODE_ONLY
+  EXIT_ONLY
+  FULL
+}
+
+enum DedicatedLineMigrationPhase {
+  PREPARE
+  CANARY_ROUTE
+  VERIFY
+  CUTOVER_ROUTE
+  COMMIT
+  CLEANUP
+  ROLLBACK
+}
+
+enum DedicatedLineMigrationStatus {
+  ACTIVE
+  NEEDS_OPERATOR
+  COMPLETED
+  CANCELLED
+  FAILED
+}
+
+enum DedicatedLineMigrationNodeRole {
+  SOURCE
+  TARGET
+}
+
+enum MigrationNodeReservationStatus {
+  RESERVED
+  RELEASED
+}
+
+enum MigrationSmokeStage {
+  CANARY
+  CUTOVER
+  ROLLBACK
+}
+
+enum DeliveryRouteStage {
+  INITIAL
+  CANARY
+  CUTOVER
+  ROLLBACK
+}
+
+enum MigrationRecommendationStatus {
+  ACTIVE
+  RESOLVED
+  DISMISSED
+}
+
+enum InventoryReservationStatus {
+  ACTIVE
+  CONSUMED
+  RELEASED
+  EXPIRED
+}
+
+enum ExternalJobStatus {
+  QUEUED
+  LEASED
+  RETRYING
+  COMPLETED
+  FAILED
+  NEEDS_OPERATOR
+}
+
+enum OutboxEventStatus {
+  PENDING
+  LEASED
+  RETRYING
+  PUBLISHED
+  FAILED
+  NEEDS_OPERATOR
+}
+
+enum FederatedUpstreamKind {
+  PLATFORM_365
+  NINE_EIGHT_FIVE
+  IPIPD
+}
+
+enum FederatedUpstreamStatus {
+  ACTIVE
+  DISABLED
+}
+
+enum FederatedScanStatus {
+  SUCCESS
+  FAILED
+}
+
+model sites {
+  id                                 String                               @id @default(uuid())
+  code                               String                               @unique
+  name                               String
+  domain                             String                               @unique
+  status                             SiteStatus
+  brandConfig                        Json?
+  maintenanceMode                    Boolean                              @default(false)
+  maintenanceMessage                 String?
+  createdAt                          DateTime                             @default(now())
+  updatedAt                          DateTime                             @updatedAt
+  tenants                            tenants[]
+  users                              users[]
+  admin_users                        admin_users[]
+  sessions                           sessions[]
+  api_keys                           api_keys[]
+  wallets                            wallets[]
+  system_settings                    system_settings[]
+  provider_accounts                  provider_accounts[]
+  platform_resources                 platform_resources[]
+  price_templates                    price_templates[]
+  sku_price_rules                    sku_price_rules[]
+  sku_price_overrides                sku_price_overrides[]
+  user_sku_price_overrides           user_sku_price_overrides[]
+  upstream_api_accounts              upstream_api_accounts[]
+  site_announcements                 site_announcements[]
+  service_skus                       service_skus[]
+  residential_exits                  residential_exits[]
+  node_groups                        node_groups[]
+  control_nodes                      control_nodes[]
+  inbound_profiles                   inbound_profiles[]
+  line_placement_policies            line_placement_policies[]
+  dedicated_line_orders              dedicated_line_orders[]
+  dedicated_lines                    dedicated_lines[]
+  delivery_route_imports             delivery_route_imports[]
+  dedicated_line_inventory_snapshots dedicated_line_inventory_snapshots[]
+  stock_reservations                 stock_reservations[]
+  external_jobs                      external_jobs[]
+  outbox_events                      outbox_events[]
+  exit_health_observations           exit_health_observations[]
+  dedicated_line_placements          dedicated_line_placements[]
+  dedicated_line_placement_nodes     dedicated_line_placement_nodes[]
+  dedicated_line_projections         dedicated_line_projections[]
+  dedicated_line_exit_assignments    dedicated_line_exit_assignments[]
+  delivery_routes                    delivery_routes[]
+  line_placement_policy_nodes        line_placement_policy_nodes[]
+  dedicated_line_domains             dedicated_line_domains[]
+  dedicated_line_migrations          dedicated_line_migrations[]
+  dedicated_line_domain_binding_operations dedicated_line_domain_binding_operations[]
+  dedicated_line_smoke_observations  dedicated_line_smoke_observations[]
+  control_node_health_observations   control_node_health_observations[]
+  migration_recommendations          dedicated_line_migration_recommendations[]
+  migration_recommendation_nodes     dedicated_line_migration_recommendation_nodes[]
+  federated_upstream_connections     federated_upstream_connections[]
+  federated_upstream_scans           federated_upstream_scans[]
+}
+
+model site_announcements {
+  id        String    @id @default(uuid())
+  siteId    String
+  title     String
+  content   String
+  isActive  Boolean   @default(true)
+  startsAt  DateTime?
+  endsAt    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  site      sites     @relation(fields: [siteId], references: [id])
+}
+
+model tenants {
+  id                              String                            @id @default(uuid())
+  siteId                          String
+  site                            sites                             @relation(fields: [siteId], references: [id])
+  ownerUserId                     String?
+  ownerUser                       users?                            @relation("OwnedTenants", fields: [ownerUserId], references: [id])
+  code                            String
+  name                            String
+  status                          TenantStatus
+  brandConfig                     Json?
+  createdAt                       DateTime                          @default(now())
+  updatedAt                       DateTime                          @updatedAt
+  users                           users[]
+  admin_users                     admin_users[]
+  api_keys                        api_keys[]
+  wallets                         wallets[]
+  provider_accounts               provider_accounts[]
+  price_templates                 price_templates[]
+  user_sku_price_overrides        user_sku_price_overrides[]
+  residential_exits               residential_exits[]
+  node_groups                     node_groups[]
+  control_nodes                   control_nodes[]
+  line_placement_policies         line_placement_policies[]
+  dedicated_line_orders           dedicated_line_orders[]
+  dedicated_lines                 dedicated_lines[]
+  stock_reservations              stock_reservations[]
+  exit_health_observations        exit_health_observations[]
+  dedicated_line_placements       dedicated_line_placements[]
+  dedicated_line_placement_nodes  dedicated_line_placement_nodes[]
+  dedicated_line_projections      dedicated_line_projections[]
+  dedicated_line_exit_assignments dedicated_line_exit_assignments[]
+  delivery_routes                 delivery_routes[]
+  dedicated_line_migrations       dedicated_line_migrations[]
+  dedicated_line_domain_binding_operations dedicated_line_domain_binding_operations[]
+  dedicated_line_smoke_observations dedicated_line_smoke_observations[]
+  migration_recommendations       dedicated_line_migration_recommendations[]
+  external_jobs                   external_jobs[]
+  outbox_events                   outbox_events[]
+  federated_upstream_connections  federated_upstream_connections[]
+  federated_upstream_scans        federated_upstream_scans[]
+
+  @@unique([siteId, code])
+  @@index([siteId, ownerUserId])
+}
+
+model users {
+  id                              String                            @id @default(uuid())
+  siteId                          String
+  site                            sites                             @relation(fields: [siteId], references: [id])
+  tenantId                        String
+  tenant                          tenants                           @relation(fields: [tenantId], references: [id])
+  email                           String                            @unique
+  passwordHash                    String
+  name                            String?
+  phone                           String?
+  status                          UserStatus
+  kycStatus                       KycStatus
+  riskStatus                      RiskStatus
+  createdAt                       DateTime                          @default(now())
+  updatedAt                       DateTime                          @updatedAt
+  wallets                         wallets[]
+  payment_orders                  payment_orders[]
+  user_price_bindings             user_price_bindings[]
+  user_resource_price_overrides   user_resource_price_overrides[]
+  user_sku_price_overrides        user_sku_price_overrides[]
+  orders                          orders[]
+  proxy_instances                 proxy_instances[]
+  tickets                         tickets[]
+  notifications                   notifications[]
+  ownedTenants                    tenants[]                         @relation("OwnedTenants")
+  dedicated_line_orders           dedicated_line_orders[]
+  dedicated_lines                 dedicated_lines[]
+  stock_reservations              stock_reservations[]
+  exit_health_observations        exit_health_observations[]        @relation("ExitHealthUsers")
+  line_placement_policies         line_placement_policies[]         @relation("PlacementPolicyUsers")
+  line_placements                 dedicated_line_placements[]       @relation("LinePlacementUsers")
+  placement_nodes                 dedicated_line_placement_nodes[]  @relation("PlacementNodeUsers")
+  dedicated_line_projections      dedicated_line_projections[]      @relation("ProjectionUsers")
+  dedicated_line_exit_assignments dedicated_line_exit_assignments[] @relation("ExitAssignmentUsers")
+  delivery_routes                 delivery_routes[]                 @relation("DeliveryRouteUsers")
+  dedicated_line_migrations       dedicated_line_migrations[]       @relation("LineMigrationUsers")
+  dedicated_line_domain_binding_operations dedicated_line_domain_binding_operations[]
+  dedicated_line_smoke_observations dedicated_line_smoke_observations[] @relation("LineSmokeUsers")
+  migration_recommendations       dedicated_line_migration_recommendations[] @relation("MigrationRecommendationUsers")
+  external_jobs                   external_jobs[]                   @relation("ExternalJobUsers")
+  outbox_events                   outbox_events[]                   @relation("OutboxEventUsers")
+}
+
+model admin_users {
+  id           String      @id @default(uuid())
+  siteId       String
+  site         sites       @relation(fields: [siteId], references: [id])
+  tenantId     String?
+  tenant       tenants?    @relation(fields: [tenantId], references: [id])
+  email        String      @unique
+  passwordHash String
+  role         AdminRole
+  status       AdminStatus
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+model sessions {
+  id        String    @id @default(uuid())
+  ownerType OwnerType
+  ownerId   String
+  siteId    String
+  site      sites     @relation(fields: [siteId], references: [id])
+  tenantId  String?
+  token     String    @unique
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+  revokedAt DateTime?
+}
+
+model api_keys {
+  id          String          @id @default(uuid())
+  siteId      String
+  site        sites           @relation(fields: [siteId], references: [id])
+  tenantId    String
+  tenant      tenants         @relation(fields: [tenantId], references: [id])
+  ownerId     String
+  ownerType   ApiKeyOwnerType
+  name        String
+  keyHash     String          @unique
+  keyPrefix   String
+  scopes      String[]
+  ipWhitelist String[]
+  status      ApiKeyStatus
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  revokedAt   DateTime?
+  lastUsedAt  DateTime?
+}
+
+model wallets {
+  id             String           @id @default(uuid())
+  siteId         String
+  site           sites            @relation(fields: [siteId], references: [id])
+  tenantId       String
+  tenant         tenants          @relation(fields: [tenantId], references: [id])
+  userId         String           @unique
+  user           users            @relation(fields: [userId], references: [id])
+  available      Decimal          @db.Decimal(20, 8)
+  frozen         Decimal          @db.Decimal(20, 8)
+  currency       String
+  version        Int              @default(0)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  ledger_entries ledger_entries[]
+}
+
+model ledger_entries {
+  id             String          @id @default(uuid())
+  siteId         String
+  tenantId       String
+  walletId       String
+  wallet         wallets         @relation(fields: [walletId], references: [id])
+  userId         String
+  type           LedgerEntryType
+  amount         Decimal         @db.Decimal(20, 8)
+  balanceAfter   Decimal         @db.Decimal(20, 8)
+  currency       String
+  relatedId      String?
+  reason         String?
+  idempotencyKey String          @unique
+  createdAt      DateTime        @default(now())
+  meta           Json?
+}
+
+model payment_orders {
+  id             String             @id @default(uuid())
+  siteId         String
+  tenantId       String
+  userId         String
+  user           users              @relation(fields: [userId], references: [id])
+  amount         Decimal            @db.Decimal(20, 8)
+  currency       String
+  channel        PaymentChannel
+  status         PaymentOrderStatus
+  idempotencyKey String             @unique
+  channelOrderId String?
+  confirmedBy    String?
+  confirmedAt    DateTime?
+  failReason     String?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  meta           Json?
+}
+
+model audit_logs {
+  id         String         @id @default(uuid())
+  siteId     String
+  tenantId   String?
+  actorType  AuditActorType
+  actorId    String
+  targetType String?
+  targetId   String?
+  action     String
+  reason     String?
+  requestId  String
+  ipAddress  String?
+  meta       Json?
+  createdAt  DateTime       @default(now())
+}
+
+model system_settings {
+  id          String   @id @default(uuid())
+  siteId      String
+  site        sites    @relation(fields: [siteId], references: [id])
+  key         String
+  value       String
+  description String?
+  updatedBy   String?
+  updatedAt   DateTime @updatedAt
+
+  @@unique([siteId, key])
+}
+
+enum UpstreamRequestStatus {
+  SUCCESS
+  ERROR
+  TIMEOUT
+}
+
+enum ProviderAccountStatus {
+  ACTIVE
+  DISABLED
+}
+
+enum UpstreamApiAccountStatus {
+  ACTIVE
+  DISABLED
+}
+
+model upstream_request_logs {
+  id                String                @id @default(uuid())
+  siteId            String
+  providerCode      String
+  upstreamAccountId String?
+  operation         String
+  requestId         String
+  durationMs        Int
+  status            UpstreamRequestStatus
+  errorCode         String?
+  requestSummary    Json?
+  responseSummary   Json?
+  createdAt         DateTime              @default(now())
+}
+
+model provider_accounts {
+  id                                 String                               @id @default(uuid())
+  siteId                             String
+  site                               sites                                @relation(fields: [siteId], references: [id])
+  tenantId                           String?
+  tenant                             tenants?                             @relation(fields: [tenantId], references: [id])
+  providerCode                       String
+  status                             ProviderAccountStatus
+  credentialEncrypted                String
+  baseUrl                            String
+  timeoutMs                          Int                                  @default(15000)
+  inventorySyncEnabled               Boolean                              @default(false)
+  enabledCountryCodes                String[]                             @default([])
+  createdAt                          DateTime                             @default(now())
+  updatedAt                          DateTime                             @updatedAt
+  residential_exits                  residential_exits[]
+  dedicated_line_inventory_snapshots dedicated_line_inventory_snapshots[]
+  stock_reservations                 stock_reservations[]
+
+  @@index([siteId, tenantId, providerCode, status])
+}
+
+enum ResourceType {
+  COUNTRY
+  REGION
+  ZONE
+}
+
+enum IpType {
+  NATIVE
+  BROADCAST
+  BOTH
+}
+
+enum Protocol {
+  HTTP
+  SOCKS5
+  BOTH
+}
+
+enum ResourceStatus {
+  ACTIVE
+  HIDDEN
+  DISABLED
+}
+
+model platform_resources {
+  id                            String                          @id @default(uuid())
+  siteId                        String
+  site                          sites                           @relation(fields: [siteId], references: [id])
+  upstreamAccountId             String?
+  parentId                      String?
+  parent                        platform_resources?             @relation("ResourceChildren", fields: [parentId], references: [id])
+  children                      platform_resources[]            @relation("ResourceChildren")
+  type                          ResourceType
+  code                          String
+  name                          String
+  displayName                   String?
+  providerCode                  String
+  ipType                        IpType
+  protocol                      Protocol
+  status                        ResourceStatus
+  sortOrder                     Int                             @default(0)
+  upstreamCost                  Decimal?                        @db.Decimal(20, 8)
+  upstreamCostCurrency          String?
+  isVisible                     Boolean                         @default(true)
+  isSaleable                    Boolean                         @default(true)
+  unsaleableReason              String?
+  createdAt                     DateTime                        @default(now())
+  updatedAt                     DateTime                        @updatedAt
+  inventory_snapshots           inventory_snapshots[]
+  resource_mappings             resource_mappings[]
+  price_rules                   price_rules[]
+  price_overrides               price_overrides[]
+  user_resource_price_overrides user_resource_price_overrides[]
+  orders                        orders[]
+
+  @@unique([siteId, providerCode, upstreamAccountId, code, ipType], map: "platform_resources_site_provider_account_code_iptype_key")
+  @@index([siteId, providerCode, upstreamAccountId, status], map: "platform_resources_site_provider_account_status_idx")
+}
+
+model inventory_snapshots {
+  id                  String             @id @default(uuid())
+  siteId              String
+  resourceId          String
+  resource            platform_resources @relation(fields: [resourceId], references: [id])
+  providerCode        String
+  upstreamAccountId   String?
+  stock               Int
+  capturedAt          DateTime
+  freshnessTtlSeconds Int                @default(300)
+  isStale             Boolean            @default(false)
+}
+
+model resource_mappings {
+  id                 String             @id @default(uuid())
+  siteId             String
+  resourceId         String
+  resource           platform_resources @relation(fields: [resourceId], references: [id])
+  providerCode       String
+  upstreamAccountId  String?
+  providerResourceId String
+  weight             Int                @default(100)
+
+  @@unique([siteId, resourceId, providerCode, upstreamAccountId], map: "resource_mappings_site_resource_provider_account_key")
+}
+
+model price_templates {
+  id                  String                @id @default(uuid())
+  siteId              String
+  site                sites                 @relation(fields: [siteId], references: [id])
+  tenantId            String?
+  tenant              tenants?              @relation(fields: [tenantId], references: [id])
+  name                String
+  description         String?
+  isDefault           Boolean               @default(false)
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  price_rules         price_rules[]
+  sku_price_rules     sku_price_rules[]
+  user_price_bindings user_price_bindings[]
+
+  @@index([siteId, tenantId])
+}
+
+model price_rules {
+  id           String             @id @default(uuid())
+  siteId       String
+  templateId   String
+  template     price_templates    @relation(fields: [templateId], references: [id])
+  resourceId   String
+  resource     platform_resources @relation(fields: [resourceId], references: [id])
+  durationDays Int
+  unitPrice    Decimal            @db.Decimal(20, 8)
+  currency     String
+  minQty       Int                @default(1)
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  @@unique([siteId, templateId, resourceId, durationDays])
+}
+
+model price_overrides {
+  id           String             @id @default(uuid())
+  siteId       String
+  resourceId   String
+  resource     platform_resources @relation(fields: [resourceId], references: [id])
+  durationDays Int
+  unitPrice    Decimal            @db.Decimal(20, 8)
+  currency     String
+
+  @@unique([siteId, resourceId, durationDays])
+}
+
+model user_price_bindings {
+  id         String          @id @default(uuid())
+  siteId     String
+  tenantId   String
+  userId     String
+  user       users           @relation(fields: [userId], references: [id])
+  templateId String
+  template   price_templates @relation(fields: [templateId], references: [id])
+
+  @@unique([siteId, userId])
+}
+
+model user_resource_price_overrides {
+  id           String             @id @default(uuid())
+  siteId       String
+  tenantId     String
+  userId       String
+  user         users              @relation(fields: [userId], references: [id])
+  resourceId   String
+  resource     platform_resources @relation(fields: [resourceId], references: [id])
+  durationDays Int
+  unitPrice    Decimal            @db.Decimal(20, 8)
+  currency     String
+
+  @@unique([siteId, userId, resourceId, durationDays])
+}
+
+model sku_price_rules {
+  id           String          @id @default(uuid())
+  siteId       String
+  site         sites           @relation(fields: [siteId], references: [id])
+  templateId   String
+  template     price_templates @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  skuId        String
+  sku          service_skus    @relation(fields: [skuId], references: [id], onDelete: Cascade)
+  durationDays Int
+  minQty       Int             @default(1)
+  unitPrice    Decimal         @db.Decimal(20, 8)
+  currency     String
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  @@unique([siteId, templateId, skuId, durationDays, minQty], map: "sku_price_rules_scope_tier_key")
+  @@index([siteId, skuId, durationDays, minQty], map: "sku_price_rules_lookup_idx")
+}
+
+model sku_price_overrides {
+  id           String       @id @default(uuid())
+  siteId       String
+  site         sites        @relation(fields: [siteId], references: [id])
+  skuId        String
+  sku          service_skus @relation(fields: [skuId], references: [id], onDelete: Cascade)
+  durationDays Int
+  minQty       Int          @default(1)
+  unitPrice    Decimal      @db.Decimal(20, 8)
+  currency     String
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@unique([siteId, skuId, durationDays, minQty], map: "sku_price_overrides_scope_tier_key")
+  @@index([siteId, skuId, durationDays, minQty], map: "sku_price_overrides_lookup_idx")
+}
+
+model user_sku_price_overrides {
+  id           String       @id @default(uuid())
+  siteId       String
+  site         sites        @relation(fields: [siteId], references: [id])
+  tenantId     String
+  tenant       tenants      @relation(fields: [tenantId], references: [id])
+  userId       String
+  user         users        @relation(fields: [userId], references: [id])
+  skuId        String
+  sku          service_skus @relation(fields: [skuId], references: [id], onDelete: Cascade)
+  durationDays Int
+  minQty       Int          @default(1)
+  unitPrice    Decimal      @db.Decimal(20, 8)
+  currency     String
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@unique([siteId, userId, skuId, durationDays, minQty], map: "user_sku_price_overrides_scope_tier_key")
+  @@index([siteId, tenantId, userId, skuId, durationDays, minQty], map: "user_sku_price_overrides_lookup_idx")
+}
+
+enum OrderType {
+  STATIC_PROXY_BUY
+  STATIC_PROXY_RENEW
+}
+
+enum OrderStatus {
+  PENDING
+  FULFILLING
+  COMPLETED
+  PARTIALLY_COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum FulfillmentJobStatus {
+  QUEUED
+  RUNNING
+  COMPLETED
+  FAILED
+  RETRYING
+}
+
+enum ProxyInstanceProtocol {
+  HTTP
+  SOCKS5
+}
+
+enum ProxyInstanceIpType {
+  NATIVE
+  BROADCAST
+}
+
+enum ProxyStatus {
+  DELIVERING
+  ACTIVE
+  EXPIRING
+  EXPIRED
+  RELEASING
+  RELEASED
+  FAILED
+}
+
+model orders {
+  id                     String                   @id @default(uuid())
+  siteId                 String
+  tenantId               String
+  userId                 String
+  user                   users                    @relation(fields: [userId], references: [id])
+  type                   OrderType
+  status                 OrderStatus
+  resourceId             String
+  resource               platform_resources       @relation(fields: [resourceId], references: [id])
+  quantity               Int
+  durationDays           Int
+  unitPrice              Decimal                  @db.Decimal(20, 8)
+  totalPrice             Decimal                  @db.Decimal(20, 8)
+  currency               String
+  quoteSnapshot          Json
+  paymentOrderId         String?
+  idempotencyKey         String
+  failReason             String?
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
+  fulfillment_jobs       fulfillment_jobs[]
+  upstream_order_mirrors upstream_order_mirrors[]
+  proxy_instances        proxy_instances[]
+
+  @@unique([siteId, tenantId, userId, idempotencyKey])
+}
+
+model fulfillment_jobs {
+  id                     String                   @id @default(uuid())
+  siteId                 String
+  orderId                String
+  order                  orders                   @relation(fields: [orderId], references: [id])
+  providerCode           String
+  upstreamAccountId      String?
+  status                 FulfillmentJobStatus
+  attempts               Int                      @default(0)
+  maxAttempts            Int                      @default(3)
+  lastError              String?
+  scheduledAt            DateTime                 @default(now())
+  startedAt              DateTime?
+  completedAt            DateTime?
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
+  upstream_order_mirrors upstream_order_mirrors[]
+}
+
+model upstream_order_mirrors {
+  id                String            @id @default(uuid())
+  siteId            String
+  orderId           String
+  order             orders            @relation(fields: [orderId], references: [id])
+  fulfillmentJobId  String
+  fulfillmentJob    fulfillment_jobs  @relation(fields: [fulfillmentJobId], references: [id])
+  providerCode      String
+  upstreamAccountId String?
+  upstreamOrderId   String
+  status            String
+  rawResponse       Json?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  proxy_instances   proxy_instances[]
+}
+
+model proxy_instances {
+  id                    String                 @id @default(uuid())
+  siteId                String
+  tenantId              String
+  userId                String
+  user                  users                  @relation(fields: [userId], references: [id])
+  orderId               String
+  order                 orders                 @relation(fields: [orderId], references: [id])
+  upstreamOrderMirrorId String
+  upstreamOrderMirror   upstream_order_mirrors @relation(fields: [upstreamOrderMirrorId], references: [id])
+  upstreamProxyId       String?
+  providerCode          String
+  upstreamAccountId     String?
+  ip                    String
+  port                  Int
+  username              String
+  password              String
+  protocol              ProxyInstanceProtocol
+  countryCode           String
+  regionCode            String?
+  ipType                ProxyInstanceIpType
+  status                ProxyStatus
+  expiresAt             DateTime
+  businessType          String?
+  userNote              String?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+}
+
+model upstream_api_accounts {
+  id                   String                   @id @default(uuid())
+  siteId               String
+  tenantId             String?
+  name                 String
+  baseUrl              String
+  apiKeyEncrypted      String
+  status               UpstreamApiAccountStatus @default(ACTIVE)
+  timeoutMs            Int                      @default(15000)
+  inventorySyncEnabled Boolean                  @default(false)
+  createdAt            DateTime                 @default(now())
+  updatedAt            DateTime                 @updatedAt
+  site                 sites                    @relation(fields: [siteId], references: [id])
+}
+
+model federated_upstream_connections {
+  id                    String                     @id @default(uuid())
+  siteId                String
+  site                  sites                      @relation(fields: [siteId], references: [id])
+  tenantId              String
+  tenant                tenants                    @relation(fields: [tenantId], references: [id])
+  kind                  FederatedUpstreamKind
+  name                  String
+  baseUrl               String
+  credentialEncrypted   String
+  credentialFingerprint String
+  status                FederatedUpstreamStatus    @default(ACTIVE)
+  timeoutMs             Int                        @default(15000)
+  lastScannedAt         DateTime?
+  lastScanStatus        FederatedScanStatus?
+  lastScanErrorCode     String?
+  createdAt             DateTime                   @default(now())
+  updatedAt             DateTime                   @updatedAt
+  scans                 federated_upstream_scans[]
+
+  @@unique([siteId, tenantId, name])
+  @@index([siteId, tenantId, kind, status])
+}
+
+model federated_upstream_scans {
+  id            String                         @id @default(uuid())
+  siteId        String
+  site          sites                          @relation(fields: [siteId], references: [id])
+  tenantId      String
+  tenant        tenants                        @relation(fields: [tenantId], references: [id])
+  connectionId  String
+  connection    federated_upstream_connections @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  status        FederatedScanStatus
+  balanceAmount Decimal?                       @db.Decimal(20, 8)
+  balanceUnit   String?
+  inventory     Json
+  prices        Json
+  errorCode     String?
+  errorDetail   String?
+  capturedAt    DateTime
+  expiresAt     DateTime
+  createdAt     DateTime                       @default(now())
+
+  @@index([siteId, tenantId, connectionId, capturedAt])
+  @@index([siteId, tenantId, status, expiresAt])
+}
+
+model tickets {
+  id        String            @id @default(uuid())
+  siteId    String
+  tenantId  String
+  userId    String
+  user      users             @relation(fields: [userId], references: [id])
+  subject   String
+  status    TicketStatus      @default(OPEN)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  messages  ticket_messages[]
+
+  @@index([siteId, tenantId, userId])
+  @@index([status])
+}
+
+model ticket_messages {
+  id         String                  @id @default(uuid())
+  ticketId   String
+  ticket     tickets                 @relation(fields: [ticketId], references: [id])
+  siteId     String
+  tenantId   String
+  authorType TicketMessageAuthorType
+  authorId   String
+  body       String
+  createdAt  DateTime                @default(now())
+
+  @@index([ticketId])
+}
+
+model notifications {
+  id          String    @id @default(uuid())
+  siteId      String
+  tenantId    String
+  userId      String
+  user        users     @relation(fields: [userId], references: [id])
+  type        String
+  title       String
+  body        String
+  relatedType String?
+  relatedId   String?
+  readAt      DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([siteId, tenantId, userId, readAt])
+}
+
+model service_skus {
+  id                  String                               @id @default(uuid())
+  siteId              String
+  site                sites                                @relation(fields: [siteId], references: [id])
+  code                String
+  name                String
+  description         String?
+  capabilities        Json
+  contractVersion     Int                                  @default(1)
+  isActive            Boolean                              @default(true)
+  isVisible           Boolean                              @default(true)
+  sortOrder           Int                                  @default(0)
+  createdAt           DateTime                             @default(now())
+  updatedAt           DateTime                             @updatedAt
+  placementPolicies   line_placement_policies[]
+  dedicatedLineOrders dedicated_line_orders[]
+  dedicatedLines      dedicated_lines[]
+  inventorySnapshots  dedicated_line_inventory_snapshots[]
+  stockReservations   stock_reservations[]
+  skuPriceRules       sku_price_rules[]
+  skuPriceOverrides   sku_price_overrides[]
+  userPriceOverrides  user_sku_price_overrides[]
+
+  @@unique([siteId, code])
+  @@index([siteId, isActive, isVisible, sortOrder])
+}
+
+model residential_exits {
+  id                   String                            @id @default(uuid())
+  siteId               String
+  site                 sites                             @relation(fields: [siteId], references: [id])
+  tenantId             String?
+  tenant               tenants?                          @relation(fields: [tenantId], references: [id])
+  providerAccountId    String?
+  providerAccount      provider_accounts?                @relation(fields: [providerAccountId], references: [id])
+  providerCode         String
+  countryCode          String
+  regionCode           String?
+  endpointCiphertext   String
+  credentialCiphertext String
+  identityFingerprint  String
+  maxReplicaFanout     Int                               @default(1)
+  status               ResidentialExitStatus             @default(AVAILABLE)
+  expiresAt            DateTime?
+  quarantinedAt        DateTime?
+  quarantineReason     String?
+  createdAt            DateTime                          @default(now())
+  updatedAt            DateTime                          @updatedAt
+  healthObservations   exit_health_observations[]
+  assignments          dedicated_line_exit_assignments[]
+  sourceMigrations     dedicated_line_migrations[] @relation("MigrationSourceExit")
+  targetMigrations     dedicated_line_migrations[] @relation("MigrationTargetExit")
+
+  @@unique([siteId, providerCode, providerAccountId, identityFingerprint], map: "residential_exits_provider_identity_key")
+  @@unique([siteId, identityFingerprint])
+  @@index([siteId, tenantId, countryCode, status, expiresAt])
+  @@index([siteId, providerAccountId, status])
+}
+
+model exit_health_observations {
+  id                  String            @id @default(uuid())
+  siteId              String
+  site                sites             @relation(fields: [siteId], references: [id])
+  tenantId            String?
+  tenant              tenants?          @relation(fields: [tenantId], references: [id], onDelete: SetNull)
+  userId              String?
+  user                users?            @relation("ExitHealthUsers", fields: [userId], references: [id], onDelete: SetNull)
+  residentialExitId   String
+  residentialExit     residential_exits @relation(fields: [residentialExitId], references: [id], onDelete: Cascade)
+  dedicatedLineId     String?
+  dedicatedLine       dedicated_lines?  @relation(fields: [dedicatedLineId], references: [id], onDelete: SetNull)
+  reachable           Boolean
+  observedIp          String?
+  observedCountryCode String?
+  latencyMs           Int?
+  failureType         String?
+  observedAt          DateTime          @default(now())
+  freshUntil          DateTime
+
+  @@index([siteId, residentialExitId, observedAt])
+  @@index([siteId, tenantId, userId, dedicatedLineId, freshUntil])
+}
+
+model node_groups {
+  id                String                      @id @default(uuid())
+  siteId            String
+  site              sites                       @relation(fields: [siteId], references: [id])
+  tenantId          String?
+  tenant            tenants?                    @relation(fields: [tenantId], references: [id])
+  code              String
+  name              String
+  regionCode        String
+  isActive          Boolean                     @default(true)
+  createdAt         DateTime                    @default(now())
+  updatedAt         DateTime                    @updatedAt
+  nodes             control_nodes[]
+  inboundProfiles   inbound_profiles[]
+  placementPolicies line_placement_policies[]
+  linePlacements    dedicated_line_placements[]
+
+  @@unique([siteId, code])
+  @@index([siteId, tenantId, regionCode, isActive])
+}
+
+model control_nodes {
+  id                       String                           @id @default(uuid())
+  siteId                   String
+  site                     sites                            @relation(fields: [siteId], references: [id])
+  tenantId                 String?
+  tenant                   tenants?                         @relation(fields: [tenantId], references: [id])
+  nodeGroupId              String
+  nodeGroup                node_groups                      @relation(fields: [nodeGroupId], references: [id])
+  code                     String
+  name                     String
+  regionCode               String
+  baseUrl                  String
+  apiCredentialCiphertext  String
+  apiCredentialFingerprint String
+  status                   ControlNodeStatus                @default(ACTIVE)
+  capacityUnits            Int
+  allocatedUnits           Int                              @default(0)
+  lastHealthyAt            DateTime?
+  createdAt                DateTime                         @default(now())
+  updatedAt                DateTime                         @updatedAt
+  inboundProfiles          inbound_profiles[]
+  placementNodes           dedicated_line_placement_nodes[]
+  projections              dedicated_line_projections[]
+  routeTargets             delivery_route_targets[]
+  allowedPlacementPolicies line_placement_policy_nodes[]
+  migrationNodes           dedicated_line_migration_nodes[]
+  healthObservations       control_node_health_observations[]
+  incidentRecommendations dedicated_line_migration_recommendations[] @relation("RecommendationSourceNode")
+  recommendationCandidates dedicated_line_migration_recommendation_nodes[]
+
+  @@unique([siteId, code])
+  @@unique([siteId, apiCredentialFingerprint])
+  @@index([siteId, tenantId, nodeGroupId, status])
+}
+
+model inbound_profiles {
+  id                String                    @id @default(uuid())
+  siteId            String
+  site              sites                     @relation(fields: [siteId], references: [id])
+  nodeGroupId       String
+  nodeGroup         node_groups               @relation(fields: [nodeGroupId], references: [id])
+  controlNodeId     String?
+  controlNode       control_nodes?            @relation(fields: [controlNodeId], references: [id])
+  code              String
+  protocol          DedicatedLineProtocol
+  inboundTag        String
+  listenPort        Int
+  transportConfig   Json?
+  isActive          Boolean                   @default(true)
+  createdAt         DateTime                  @default(now())
+  updatedAt         DateTime                  @updatedAt
+  placementPolicies line_placement_policies[]
+  dedicatedLines    dedicated_lines[]
+
+  @@unique([siteId, nodeGroupId, code])
+  @@unique([siteId, controlNodeId, inboundTag])
+  @@index([siteId, nodeGroupId, protocol, isActive])
+}
+
+model line_placement_policies {
+  id                   String                      @id @default(uuid())
+  siteId               String
+  site                 sites                       @relation(fields: [siteId], references: [id])
+  tenantId             String?
+  tenant               tenants?                    @relation(fields: [tenantId], references: [id])
+  userId               String?
+  user                 users?                      @relation("PlacementPolicyUsers", fields: [userId], references: [id], onDelete: SetNull)
+  skuId                String?
+  sku                  service_skus?               @relation(fields: [skuId], references: [id])
+  nodeGroupId          String
+  nodeGroup            node_groups                 @relation(fields: [nodeGroupId], references: [id])
+  inboundProfileId     String
+  inboundProfile       inbound_profiles            @relation(fields: [inboundProfileId], references: [id])
+  mode                 PlacementMode               @default(ACTIVE_ACTIVE)
+  targetReplicaCount   Int
+  minReadyReplicaCount Int
+  maxUnitsPerNode      Int
+  priority             Int                         @default(100)
+  isActive             Boolean                     @default(true)
+  createdAt            DateTime                    @default(now())
+  updatedAt            DateTime                    @updatedAt
+  linePlacements       dedicated_line_placements[]
+  allowedNodes         line_placement_policy_nodes[]
+
+  @@index([siteId, tenantId, userId, skuId, isActive, priority])
+  @@index([siteId, nodeGroupId, inboundProfileId])
+}
+
+model line_placement_policy_nodes {
+  id        String                  @id @default(uuid())
+  siteId    String
+  site      sites                   @relation(fields: [siteId], references: [id])
+  policyId  String
+  policy    line_placement_policies @relation(fields: [policyId], references: [id], onDelete: Cascade)
+  nodeId    String
+  node      control_nodes           @relation(fields: [nodeId], references: [id])
+  createdAt DateTime                @default(now())
+
+  @@unique([policyId, nodeId])
+  @@index([siteId, nodeId])
+}
+
+model dedicated_line_orders {
+  id              String              @id @default(uuid())
+  siteId          String
+  site            sites               @relation(fields: [siteId], references: [id])
+  tenantId        String
+  tenant          tenants             @relation(fields: [tenantId], references: [id])
+  userId          String
+  user            users               @relation(fields: [userId], references: [id])
+  skuId           String
+  sku             service_skus        @relation(fields: [skuId], references: [id])
+  skuCode         String
+  skuName         String
+  countryCode     String
+  regionCode      String?
+  businessType    String?
+  durationDays    Int
+  quantity        Int
+  unitPrice       Decimal             @db.Decimal(20, 8)
+  totalPrice      Decimal             @db.Decimal(20, 8)
+  currency        String
+  priceSource     String
+  contractVersion Int
+  idempotencyKey  String
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  reservation     stock_reservations?
+  executionJob    external_jobs?
+  lines           dedicated_lines[]
+
+  @@unique([siteId, tenantId, userId, idempotencyKey], map: "dedicated_line_orders_scoped_idempotency_key")
+  @@index([siteId, tenantId, userId, createdAt])
+  @@index([siteId, tenantId, skuId, createdAt])
+}
+
+model dedicated_lines {
+  id                        String                           @id @default(uuid())
+  siteId                    String
+  site                      sites                            @relation(fields: [siteId], references: [id])
+  tenantId                  String
+  tenant                    tenants                          @relation(fields: [tenantId], references: [id])
+  userId                    String
+  user                      users                            @relation(fields: [userId], references: [id])
+  skuId                     String
+  sku                       service_skus                     @relation(fields: [skuId], references: [id])
+  dedicatedLineOrderId      String?
+  dedicatedLineOrder        dedicated_line_orders?           @relation(fields: [dedicatedLineOrderId], references: [id])
+  inboundProfileId          String
+  inboundProfile            inbound_profiles                 @relation(fields: [inboundProfileId], references: [id])
+  status                    DedicatedLineStatus              @default(PENDING_PAYMENT)
+  countryCode               String
+  protocol                  DedicatedLineProtocol
+  clientEmail               String
+  clientIdentityCiphertext  String
+  clientIdentityFingerprint String
+  desiredVersion            Int                              @default(1)
+  quotaBytes                BigInt?
+  uplinkLimitBps            BigInt?
+  downlinkLimitBps          BigInt?
+  maxConnections            Int?
+  ipLimit                   Int?
+  startsAt                  DateTime?
+  expiresAt                 DateTime?
+  suspendedAt               DateTime?
+  activeMigrationId         String?                          @unique
+  activeMigration           dedicated_line_migrations?      @relation("ActiveLineMigration", fields: [activeMigrationId], references: [id])
+  idempotencyKey            String
+  createdAt                 DateTime                         @default(now())
+  updatedAt                 DateTime                         @updatedAt
+  placement                 dedicated_line_placements?
+  projections               dedicated_line_projections[]
+  exitAssignment            dedicated_line_exit_assignments?
+  healthObservations        exit_health_observations[]
+  deliveryRoutes            delivery_routes[]
+  domains                   dedicated_line_domains[]
+  domainBindingOperations   dedicated_line_domain_binding_operations[]
+  migrations                dedicated_line_migrations[]    @relation("LineMigrations")
+  smokeObservations         dedicated_line_smoke_observations[]
+  migrationRecommendations  dedicated_line_migration_recommendations[]
+  jobs                      external_jobs[]
+  outboxEvents              outbox_events[]
+
+  @@unique([siteId, tenantId, userId, idempotencyKey])
+  @@unique([siteId, clientIdentityFingerprint])
+  @@unique([siteId, inboundProfileId, clientEmail])
+  @@index([siteId, tenantId, userId, status])
+  @@index([dedicatedLineOrderId, status])
+  @@index([siteId, status, expiresAt])
+}
+
+model dedicated_line_placements {
+  id                    String                           @id @default(uuid())
+  siteId                String
+  site                  sites                            @relation(fields: [siteId], references: [id])
+  tenantId              String
+  tenant                tenants                          @relation(fields: [tenantId], references: [id])
+  userId                String
+  user                  users                            @relation("LinePlacementUsers", fields: [userId], references: [id])
+  dedicatedLineId       String                           @unique
+  dedicatedLine         dedicated_lines                  @relation(fields: [dedicatedLineId], references: [id], onDelete: Cascade)
+  policyId              String?
+  policy                line_placement_policies?         @relation(fields: [policyId], references: [id])
+  nodeGroupId           String
+  nodeGroup             node_groups                      @relation(fields: [nodeGroupId], references: [id])
+  mode                  PlacementMode
+  targetReplicaCount    Int
+  minReadyReplicaCount  Int
+  version               Int                              @default(1)
+  assignmentFingerprint String
+  changeReason          String
+  createdAt             DateTime                         @default(now())
+  updatedAt             DateTime                         @updatedAt
+  nodes                 dedicated_line_placement_nodes[]
+
+  @@unique([siteId, dedicatedLineId, version])
+  @@index([siteId, tenantId, userId, nodeGroupId])
+}
+
+model dedicated_line_placement_nodes {
+  id          String                    @id @default(uuid())
+  siteId      String
+  site        sites                     @relation(fields: [siteId], references: [id])
+  tenantId    String
+  tenant      tenants                   @relation(fields: [tenantId], references: [id])
+  userId      String
+  user        users                     @relation("PlacementNodeUsers", fields: [userId], references: [id])
+  placementId String
+  placement   dedicated_line_placements @relation(fields: [placementId], references: [id], onDelete: Cascade)
+  nodeId      String
+  node        control_nodes             @relation(fields: [nodeId], references: [id])
+  ordinal     Int
+  assignedAt  DateTime                  @default(now())
+
+  @@unique([placementId, nodeId])
+  @@unique([placementId, ordinal])
+  @@index([siteId, tenantId, userId, nodeId])
+}
+
+model dedicated_line_projections {
+  id              String           @id @default(uuid())
+  siteId          String
+  site            sites            @relation(fields: [siteId], references: [id])
+  tenantId        String
+  tenant          tenants          @relation(fields: [tenantId], references: [id])
+  userId          String
+  user            users            @relation("ProjectionUsers", fields: [userId], references: [id])
+  dedicatedLineId String
+  dedicatedLine   dedicated_lines  @relation(fields: [dedicatedLineId], references: [id], onDelete: Cascade)
+  migrationId     String?
+  migration       dedicated_line_migrations? @relation(fields: [migrationId], references: [id], onDelete: Cascade)
+  nodeId          String
+  node            control_nodes    @relation(fields: [nodeId], references: [id])
+  projectionKey   String
+  status          ProjectionStatus @default(PENDING)
+  desiredVersion  Int
+  observedVersion Int?
+  desiredHash     String
+  observedHash    String?
+  nodeExternalId  String?
+  lastErrorCode   String?
+  lastErrorDetail Json?
+  retryCount      Int              @default(0)
+  lastAppliedAt   DateTime?
+  lastObservedAt  DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@unique([dedicatedLineId, nodeId, desiredVersion])
+  @@unique([siteId, projectionKey])
+  @@unique([nodeId, nodeExternalId])
+  @@index([siteId, tenantId, userId, status])
+  @@index([nodeId, status, desiredVersion])
+}
+
+model dedicated_line_exit_assignments {
+  id                String               @id @default(uuid())
+  siteId            String
+  site              sites                @relation(fields: [siteId], references: [id])
+  tenantId          String
+  tenant            tenants              @relation(fields: [tenantId], references: [id])
+  userId            String
+  user              users                @relation("ExitAssignmentUsers", fields: [userId], references: [id])
+  dedicatedLineId   String               @unique
+  dedicatedLine     dedicated_lines      @relation(fields: [dedicatedLineId], references: [id], onDelete: Cascade)
+  residentialExitId String
+  residentialExit   residential_exits    @relation(fields: [residentialExitId], references: [id])
+  status            ExitAssignmentStatus @default(ACTIVE)
+  assignedAt        DateTime             @default(now())
+  releasedAt        DateTime?
+  releaseReason     String?
+
+  @@index([siteId, tenantId, userId, status])
+  @@index([residentialExitId, status])
+}
+
+model delivery_route_imports {
+  id                String            @id @default(uuid())
+  siteId            String
+  site              sites             @relation(fields: [siteId], references: [id])
+  sourceName        String
+  sourceVersion     String
+  sourceFingerprint String
+  importedBy        String
+  capturedAt        DateTime
+  expiresAt         DateTime?
+  createdAt         DateTime          @default(now())
+  routes            delivery_routes[]
+  canaryMigrations  dedicated_line_migrations[] @relation("MigrationCanaryRoute")
+  cutoverMigrations dedicated_line_migrations[] @relation("MigrationCutoverRoute")
+  rollbackMigrations dedicated_line_migrations[] @relation("MigrationRollbackRoute")
+
+  @@unique([siteId, sourceName, sourceVersion])
+  @@unique([siteId, sourceFingerprint])
+  @@index([siteId, sourceName, capturedAt])
+}
+
+model delivery_routes {
+  id                String                   @id @default(uuid())
+  siteId            String
+  site              sites                    @relation(fields: [siteId], references: [id])
+  tenantId          String
+  tenant            tenants                  @relation(fields: [tenantId], references: [id])
+  userId            String
+  user              users                    @relation("DeliveryRouteUsers", fields: [userId], references: [id])
+  routeImportId     String
+  routeImport       delivery_route_imports   @relation(fields: [routeImportId], references: [id])
+  dedicatedLineId   String?
+  dedicatedLine     dedicated_lines?         @relation(fields: [dedicatedLineId], references: [id], onDelete: SetNull)
+  sourceRouteId     String
+  entranceGroupCode String
+  protocol          DedicatedLineProtocol
+  listenPort        Int
+  sourceVersion     String
+  isCurrent         Boolean                  @default(true)
+  isStaged          Boolean                  @default(false)
+  migrationId       String?
+  migration         dedicated_line_migrations? @relation(fields: [migrationId], references: [id], onDelete: SetNull)
+  migrationStage    DeliveryRouteStage?
+  validFrom         DateTime
+  validUntil        DateTime?
+  createdAt         DateTime                 @default(now())
+  domains           delivery_route_domains[]
+  targets           delivery_route_targets[]
+
+  @@unique([routeImportId, sourceRouteId])
+  @@index([siteId, tenantId, userId, dedicatedLineId, isCurrent])
+  @@index([siteId, entranceGroupCode, listenPort, sourceVersion])
+}
+
+model dedicated_line_domains {
+  id              String             @id @default(uuid())
+  siteId          String
+  site            sites              @relation(fields: [siteId], references: [id])
+  dedicatedLineId String
+  dedicatedLine   dedicated_lines    @relation(fields: [dedicatedLineId], references: [id], onDelete: Cascade)
+  hostname        String
+  port            Int
+  role            LineDomainRole
+  status          LineDomainStatus   @default(ACTIVE)
+  createdAt       DateTime           @default(now())
+  retiredAt       DateTime?
+  retiredReason   String?
+
+  @@unique([siteId, hostname, port])
+  @@index([siteId, dedicatedLineId, status, role])
+}
+
+model dedicated_line_domain_binding_operations {
+  id              String          @id @default(uuid())
+  siteId          String
+  site            sites           @relation(fields: [siteId], references: [id])
+  tenantId        String
+  tenant          tenants         @relation(fields: [tenantId], references: [id])
+  userId          String
+  user            users            @relation(fields: [userId], references: [id])
+  dedicatedLineId String
+  dedicatedLine   dedicated_lines @relation(fields: [dedicatedLineId], references: [id], onDelete: Cascade)
+  idempotencyKey  String
+  result          Json
+  createdAt       DateTime        @default(now())
+
+  @@unique([siteId, dedicatedLineId, idempotencyKey])
+  @@index([siteId, tenantId, userId, createdAt])
+}
+
+model dedicated_line_migrations {
+  id                 String                         @id @default(uuid())
+  siteId             String
+  site               sites                          @relation(fields: [siteId], references: [id])
+  tenantId           String
+  tenant             tenants                        @relation(fields: [tenantId], references: [id])
+  userId             String
+  user               users                          @relation("LineMigrationUsers", fields: [userId], references: [id])
+  dedicatedLineId    String
+  dedicatedLine      dedicated_lines                @relation("LineMigrations", fields: [dedicatedLineId], references: [id], onDelete: Cascade)
+  type               DedicatedLineMigrationType
+  phase              DedicatedLineMigrationPhase    @default(PREPARE)
+  status             DedicatedLineMigrationStatus   @default(ACTIVE)
+  idempotencyKey     String
+  requestedBy        String
+  reason             String
+  sourceLineVersion  Int
+  targetLineVersion  Int
+  sourcePlacementId  String
+  targetPlacementId  String?
+  sourceExitId       String
+  sourceExit         residential_exits              @relation("MigrationSourceExit", fields: [sourceExitId], references: [id])
+  targetExitId       String?
+  targetExit         residential_exits?             @relation("MigrationTargetExit", fields: [targetExitId], references: [id])
+  canaryRouteImportId String?
+  canaryRouteImport  delivery_route_imports?        @relation("MigrationCanaryRoute", fields: [canaryRouteImportId], references: [id])
+  cutoverRouteImportId String?
+  cutoverRouteImport delivery_route_imports?        @relation("MigrationCutoverRoute", fields: [cutoverRouteImportId], references: [id])
+  rollbackRouteImportId String?
+  rollbackRouteImport delivery_route_imports?       @relation("MigrationRollbackRoute", fields: [rollbackRouteImportId], references: [id])
+  activeLine         dedicated_lines?               @relation("ActiveLineMigration")
+  nodes              dedicated_line_migration_nodes[]
+  projections        dedicated_line_projections[]
+  smokeObservations  dedicated_line_smoke_observations[]
+  deliveryRoutes     delivery_routes[]
+  recommendations    dedicated_line_migration_recommendations[]
+  lastErrorCode      String?
+  lastErrorDetail    Json?
+  retryCount         Int                            @default(0)
+  committedAt        DateTime?
+  finishedAt         DateTime?
+  createdAt          DateTime                       @default(now())
+  updatedAt          DateTime                       @updatedAt
+
+  @@unique([siteId, idempotencyKey])
+  @@index([siteId, tenantId, userId, status, phase])
+  @@index([dedicatedLineId, status, createdAt])
+}
+
+model dedicated_line_migration_nodes {
+  id                String                           @id @default(uuid())
+  migrationId       String
+  migration         dedicated_line_migrations        @relation(fields: [migrationId], references: [id], onDelete: Cascade)
+  nodeId            String
+  node              control_nodes                   @relation(fields: [nodeId], references: [id])
+  role              DedicatedLineMigrationNodeRole
+  ordinal           Int
+  reservedUnits     Int                              @default(0)
+  reservationStatus MigrationNodeReservationStatus   @default(RESERVED)
+  projectionId      String?
+  createdAt         DateTime                         @default(now())
+  releasedAt        DateTime?
+
+  @@unique([migrationId, nodeId, role])
+  @@unique([migrationId, role, ordinal])
+  @@index([nodeId, reservationStatus])
+}
+
+model dedicated_line_smoke_observations {
+  id              String                         @id @default(uuid())
+  siteId          String
+  site            sites                          @relation(fields: [siteId], references: [id])
+  tenantId        String
+  tenant          tenants                        @relation(fields: [tenantId], references: [id])
+  userId          String
+  user            users                          @relation("LineSmokeUsers", fields: [userId], references: [id])
+  dedicatedLineId String
+  dedicatedLine   dedicated_lines                 @relation(fields: [dedicatedLineId], references: [id], onDelete: Cascade)
+  migrationId     String
+  migration       dedicated_line_migrations       @relation(fields: [migrationId], references: [id], onDelete: Cascade)
+  stage           MigrationSmokeStage
+  hostname        String
+  verified        Boolean                        @default(false)
+  observedIp      String?
+  observedCountryCode String?
+  latencyMs       Int?
+  failureType     String?
+  failureDetail   Json?
+  observedAt      DateTime                       @default(now())
+  freshUntil      DateTime
+
+  @@index([siteId, dedicatedLineId, migrationId, stage, observedAt])
+}
+
+model control_node_health_observations {
+  id             String        @id @default(uuid())
+  siteId         String
+  site           sites         @relation(fields: [siteId], references: [id])
+  nodeId         String
+  node           control_nodes  @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  projectionKey  String?
+  reachable      Boolean
+  observedVersion Int?
+  observedHash   String?
+  latencyMs      Int?
+  failureType    String?
+  failureDetail  Json?
+  observedAt     DateTime      @default(now())
+
+  @@index([siteId, nodeId, observedAt])
+}
+
+model dedicated_line_migration_recommendations {
+  id              String                           @id @default(uuid())
+  siteId          String
+  site            sites                            @relation(fields: [siteId], references: [id])
+  tenantId        String
+  tenant          tenants                          @relation(fields: [tenantId], references: [id])
+  userId          String
+  user            users                            @relation("MigrationRecommendationUsers", fields: [userId], references: [id])
+  dedicatedLineId String
+  dedicatedLine   dedicated_lines                  @relation(fields: [dedicatedLineId], references: [id], onDelete: Cascade)
+  sourceNodeId    String
+  sourceNode      control_nodes                    @relation("RecommendationSourceNode", fields: [sourceNodeId], references: [id])
+  incidentVersion Int
+  status          MigrationRecommendationStatus    @default(ACTIVE)
+  reasonCode      String
+  reasonDetail    Json?
+  createdAt       DateTime                         @default(now())
+  resolvedAt      DateTime?
+  candidates      dedicated_line_migration_recommendation_nodes[]
+  migrationId     String?
+  migration       dedicated_line_migrations?        @relation(fields: [migrationId], references: [id], onDelete: SetNull)
+
+  @@unique([dedicatedLineId, sourceNodeId, incidentVersion])
+  @@index([siteId, tenantId, userId, status, createdAt])
+}
+
+model dedicated_line_migration_recommendation_nodes {
+  id               String                           @id @default(uuid())
+  siteId           String
+  site             sites                            @relation(fields: [siteId], references: [id])
+  recommendationId  String
+  recommendation   dedicated_line_migration_recommendations @relation(fields: [recommendationId], references: [id], onDelete: Cascade)
+  nodeId           String
+  node              control_nodes                   @relation(fields: [nodeId], references: [id])
+  rank             Int
+  eligible         Boolean
+  reasonCode       String?
+  createdAt        DateTime                         @default(now())
+
+  @@unique([recommendationId, nodeId])
+  @@index([siteId, nodeId, eligible])
+}
+
+model delivery_route_domains {
+  id              String          @id @default(uuid())
+  deliveryRouteId String
+  deliveryRoute   delivery_routes @relation(fields: [deliveryRouteId], references: [id], onDelete: Cascade)
+  hostname        String
+  port            Int
+  isPrimary       Boolean         @default(false)
+  createdAt       DateTime        @default(now())
+
+  @@unique([deliveryRouteId, hostname, port])
+  @@index([hostname, port])
+}
+
+model delivery_route_targets {
+  id              String          @id @default(uuid())
+  deliveryRouteId String
+  deliveryRoute   delivery_routes @relation(fields: [deliveryRouteId], references: [id], onDelete: Cascade)
+  nodeId          String
+  node            control_nodes   @relation(fields: [nodeId], references: [id])
+  targetPort      Int
+  targetVersion   String
+  createdAt       DateTime        @default(now())
+
+  @@unique([deliveryRouteId, nodeId, targetPort, targetVersion])
+  @@index([nodeId, targetPort, targetVersion])
+}
+
+model dedicated_line_inventory_snapshots {
+  id                 String               @id @default(uuid())
+  siteId             String
+  site               sites                @relation(fields: [siteId], references: [id])
+  providerAccountId  String
+  providerAccount    provider_accounts    @relation(fields: [providerAccountId], references: [id])
+  skuId              String
+  sku                service_skus         @relation(fields: [skuId], references: [id])
+  providerCode       String
+  countryCode        String
+  providerResourceId String
+  quantity           Int
+  reservedQuantity   Int                  @default(0)
+  sourceVersion      String
+  capturedAt         DateTime
+  expiresAt          DateTime
+  createdAt          DateTime             @default(now())
+  reservations       stock_reservations[]
+
+  @@unique([siteId, providerAccountId, skuId, countryCode, providerResourceId, sourceVersion], map: "line_inventory_snapshot_version_key")
+  @@index([siteId, providerCode, skuId, countryCode, capturedAt])
+  @@index([siteId, expiresAt])
+}
+
+model stock_reservations {
+  id                   String                             @id @default(uuid())
+  siteId               String
+  site                 sites                              @relation(fields: [siteId], references: [id])
+  tenantId             String
+  tenant               tenants                            @relation(fields: [tenantId], references: [id])
+  userId               String
+  user                 users                              @relation(fields: [userId], references: [id])
+  inventorySnapshotId  String
+  inventorySnapshot    dedicated_line_inventory_snapshots @relation(fields: [inventorySnapshotId], references: [id])
+  providerAccountId    String
+  providerAccount      provider_accounts                  @relation(fields: [providerAccountId], references: [id])
+  skuId                String
+  sku                  service_skus                       @relation(fields: [skuId], references: [id])
+  dedicatedLineOrderId String?                            @unique
+  dedicatedLineOrder   dedicated_line_orders?             @relation(fields: [dedicatedLineOrderId], references: [id])
+  providerCode         String
+  countryCode          String
+  quantity             Int
+  snapshotVersion      String
+  status               InventoryReservationStatus         @default(ACTIVE)
+  idempotencyKey       String
+  expiresAt            DateTime
+  consumedAt           DateTime?
+  releasedAt           DateTime?
+  createdAt            DateTime                           @default(now())
+  updatedAt            DateTime                           @updatedAt
+
+  @@unique([siteId, tenantId, userId, idempotencyKey], map: "stock_reservations_scoped_idempotency_key")
+  @@index([siteId, providerAccountId, skuId, countryCode, status, expiresAt])
+  @@index([inventorySnapshotId, status])
+}
+
+model external_jobs {
+  id                   String                 @id @default(uuid())
+  siteId               String
+  site                 sites                  @relation(fields: [siteId], references: [id])
+  tenantId             String?
+  tenant               tenants?               @relation(fields: [tenantId], references: [id], onDelete: SetNull)
+  userId               String?
+  user                 users?                 @relation("ExternalJobUsers", fields: [userId], references: [id], onDelete: SetNull)
+  dedicatedLineId      String?
+  dedicatedLine        dedicated_lines?       @relation(fields: [dedicatedLineId], references: [id], onDelete: SetNull)
+  dedicatedLineOrderId String?                @unique
+  dedicatedLineOrder   dedicated_line_orders? @relation(fields: [dedicatedLineOrderId], references: [id])
+  kind                 String
+  aggregateType        String
+  aggregateId          String
+  desiredVersion       Int
+  status               ExternalJobStatus      @default(QUEUED)
+  attempt              Int                    @default(0)
+  maxAttempts          Int                    @default(5)
+  nextRunAt            DateTime               @default(now())
+  leaseOwner           String?
+  leaseExpiresAt       DateTime?
+  idempotencyKey       String
+  dedupeKey            String
+  payload              Json
+  lastErrorCode        String?
+  lastErrorDetail      Json?
+  completedAt          DateTime?
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+
+  @@unique([siteId, idempotencyKey])
+  @@unique([siteId, dedupeKey])
+  @@index([status, nextRunAt, leaseExpiresAt])
+  @@index([siteId, tenantId, userId, aggregateType, aggregateId, desiredVersion])
+}
+
+model outbox_events {
+  id              String            @id @default(uuid())
+  siteId          String
+  site            sites             @relation(fields: [siteId], references: [id])
+  tenantId        String?
+  tenant          tenants?          @relation(fields: [tenantId], references: [id], onDelete: SetNull)
+  userId          String?
+  user            users?            @relation("OutboxEventUsers", fields: [userId], references: [id], onDelete: SetNull)
+  dedicatedLineId String?
+  dedicatedLine   dedicated_lines?  @relation(fields: [dedicatedLineId], references: [id], onDelete: SetNull)
+  topic           String
+  aggregateType   String
+  aggregateId     String
+  desiredVersion  Int
+  status          OutboxEventStatus @default(PENDING)
+  attempt         Int               @default(0)
+  maxAttempts     Int               @default(5)
+  nextRunAt       DateTime          @default(now())
+  leaseOwner      String?
+  leaseExpiresAt  DateTime?
+  idempotencyKey  String
+  dedupeKey       String
+  payload         Json
+  lastErrorCode   String?
+  lastErrorDetail Json?
+  publishedAt     DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@unique([siteId, idempotencyKey])
+  @@unique([siteId, dedupeKey])
+  @@index([status, nextRunAt, leaseExpiresAt])
+  @@index([siteId, tenantId, userId, aggregateType, aggregateId, desiredVersion])
+}

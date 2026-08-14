@@ -1,0 +1,2 @@
+{"file":".trellis/spec/api-contract.md","reason":"Check that list/create DTOs return the persisted name before enabling simplified creation."}
+{"file":".trellis/spec/backend/database-guidelines.md","reason":"Check Prisma migration and repository tests cover the new persisted field."}

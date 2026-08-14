@@ -1,0 +1,1 @@
+export const DEFAULT_PRICING_DURATION_DAYS = 30;

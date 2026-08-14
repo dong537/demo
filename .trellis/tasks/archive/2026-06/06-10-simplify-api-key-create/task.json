@@ -1,0 +1,29 @@
+{
+  "id": "simplify-api-key-create",
+  "name": "simplify-api-key-create",
+  "title": "简化 API Key 创建",
+  "description": "研究将用户端 API Key 创建简化为名称输入，并确认需要后端 schema 支持后再上线。",
+  "status": "completed",
+  "dev_type": "fullstack",
+  "scope": "api web",
+  "package": "apps/api apps/web packages/db",
+  "priority": "P2",
+  "creator": "rewrite-residential-proxy-platform",
+  "assignee": "rewrite-residential-proxy-platform",
+  "createdAt": "2026-06-10",
+  "completedAt": "2026-06-12",
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    "packages/db/prisma/schema.prisma",
+    "apps/web/src/features/customer-api-keys/api-key-list.feature.tsx"
+  ],
+  "notes": "Implemented with a persisted api_keys.name field, backend DTO/repository/use-case support, simplified customer create UI, and focused API/Web tests.",
+  "meta": {}
+}

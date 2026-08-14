@@ -1,0 +1,3 @@
+{"file":".trellis/spec/api-contract.md","reason":"API Key creation needs a backend contract before a customer-facing name field can be shipped."}
+{"file":".trellis/spec/backend/database-guidelines.md","reason":"Persisted API Key names require schema and repository changes, not frontend-only state."}
+{"file":".trellis/spec/frontend/state-management.md","reason":"The customer API Key UI must display server-returned fields only."}

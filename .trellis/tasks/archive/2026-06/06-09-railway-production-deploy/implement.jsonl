@@ -1,0 +1,2 @@
+{"file":".trellis/spec/testing-deployment.md","reason":"Railway three-service deployment contracts, runtime env gates, and smoke checks."}
+{"file":".trellis/spec/backend/directory-structure.md","reason":"Worker runtime boundary and @ipeasy/api/worker export expectations."}

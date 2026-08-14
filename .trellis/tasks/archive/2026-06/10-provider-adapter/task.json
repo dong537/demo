@@ -1,0 +1,23 @@
+{
+  "id": "10-provider-adapter",
+  "title": "Provider Adapter — IPIPD / 985Proxy / PR",
+  "description": "建立 Provider Registry 配置服务，实现三个 ProviderAdapter（IPIPD、985Proxy、PR），统一 healthCheck/syncInventory/buyStaticProxy/queryOrder 接口，上游请求脱敏记录到 upstream_request_logs。",
+  "status": "completed",
+  "priority": "P0",
+  "phase": 2,
+  "dependsOn": [
+    "02-prisma-schema"
+  ],
+  "files": [
+    "packages/db/prisma/schema.prisma",
+    "apps/api/src/modules/providers/provider-registry.service.ts",
+    "apps/api/src/modules/providers/provider.types.ts",
+    "apps/api/src/modules/providers/adapters/ipipd.adapter.ts",
+    "apps/api/src/modules/providers/adapters/nine-eight-five.adapter.ts",
+    "apps/api/src/modules/providers/adapters/pr.adapter.ts",
+    "apps/api/src/modules/providers/providers.module.ts",
+    "apps/api/src/modules/providers/upstream-log.repository.ts"
+  ],
+  "createdAt": "2026-06-07",
+  "completedAt": "2026-06-08"
+}

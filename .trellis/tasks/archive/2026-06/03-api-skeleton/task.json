@@ -1,0 +1,32 @@
+{
+  "id": "03-api-skeleton",
+  "title": "NestJS API 骨架",
+  "description": "初始化 apps/api，安装 NestJS + Fastify adapter，建立 common/ 层（config、errors、logging、auth context、pagination、money、time），设置统一 envelope 拦截器、异常过滤器、requestId 中间件、/health 和 /ready 端点。",
+  "status": "completed",
+  "priority": "P0",
+  "phase": 1,
+  "dependsOn": [
+    "01-monorepo-init",
+    "02-prisma-schema"
+  ],
+  "files": [
+    "apps/api/src/main.ts",
+    "apps/api/src/app.module.ts",
+    "apps/api/src/common/config/config.service.ts",
+    "apps/api/src/common/config/env.schema.ts",
+    "apps/api/src/common/errors/app-error.ts",
+    "apps/api/src/common/errors/error-codes.ts",
+    "apps/api/src/common/errors/exception-filter.ts",
+    "apps/api/src/common/logging/logger.service.ts",
+    "apps/api/src/common/logging/request-id.middleware.ts",
+    "apps/api/src/common/auth/auth-context.ts",
+    "apps/api/src/common/pagination/pagination.dto.ts",
+    "apps/api/src/common/money/money.ts",
+    "apps/api/src/common/time/time.ts",
+    "apps/api/src/common/interceptors/envelope.interceptor.ts",
+    "apps/api/src/modules/health/health.controller.ts",
+    "packages/config/src/index.ts"
+  ],
+  "createdAt": "2026-06-06",
+  "completedAt": "2026-06-08"
+}

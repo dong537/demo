@@ -1,0 +1,6 @@
+{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "前端 feature/antd/状态约定"}
+{"file": ".trellis/spec/frontend/hook-guidelines.md", "reason": "TanStack Query/请求层/queryKey 约定"}
+{"file": ".trellis/spec/frontend/state-management.md", "reason": "server/client/form state 分离 + 已有场景"}
+{"file": ".trellis/tasks/06-09-frontend-completion-audit/research/backend-api-inventory.md", "reason": "后端真实接口清单，界定能做什么"}
+{"file": ".trellis/tasks/06-09-frontend-completion-audit/research/frontend-coverage.md", "reason": "前端已覆盖基线"}

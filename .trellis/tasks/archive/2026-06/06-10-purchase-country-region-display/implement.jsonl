@@ -1,0 +1,2 @@
+{"file":".trellis/spec/frontend/component-guidelines.md","reason":"Purchase UI changes must use project Ant Design patterns and keep controls accessible."}
+{"file":".trellis/spec/frontend/state-management.md","reason":"Resource and quote data remain TanStack Query server state, not static local data."}

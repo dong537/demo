@@ -1,0 +1,30 @@
+{
+  "id": "purchase-country-region-display",
+  "name": "purchase-country-region-display",
+  "title": "购买页展示国家地区",
+  "description": "用户购买静态代理时直接展示国家/地区、资源代码和库存，避免只看到抽象商品名。",
+  "status": "completed",
+  "dev_type": "frontend",
+  "scope": "web",
+  "package": "apps/web",
+  "priority": "P2",
+  "creator": "rewrite-residential-proxy-platform",
+  "assignee": "rewrite-residential-proxy-platform",
+  "createdAt": "2026-06-10",
+  "completedAt": "2026-06-12",
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    "apps/web/src/features/customer-proxies/buy-static-proxy.feature.tsx",
+    "apps/web/src/shared/i18n/zh.ts",
+    "apps/web/src/shared/i18n/en.ts"
+  ],
+  "notes": "Implementation was completed in earlier frontend commits; task record preserved for Trellis context.",
+  "meta": {}
+}

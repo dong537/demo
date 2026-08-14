@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="ipmigo">
+  <defs>
+    <linearGradient id="ipmigo-mark" x1="10" y1="10" x2="70" y2="72" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#00BCFF"/>
+      <stop offset="1" stop-color="#003AFE"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="88" fill="none"/>
+  <g>
+    <rect x="12" y="14" width="60" height="60" rx="18" fill="url(#ipmigo-mark)"/>
+    <circle cx="31" cy="35" r="6" fill="#fff"/>
+    <circle cx="52" cy="35" r="6" fill="#fff" opacity=".84"/>
+    <circle cx="42" cy="55" r="6" fill="#fff" opacity=".92"/>
+    <path d="M31 35h21M52 35 42 55M31 35l11 20" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity=".92"/>
+  </g>
+  <text x="88" y="57" fill="#003AFE" font-family="Inter, PingFang SC, Microsoft YaHei, Arial, sans-serif" font-size="42" font-weight="760">ipmigo</text>
+</svg>

@@ -1,0 +1,82 @@
+:root {
+  --ipx-primary: #003afe;
+  --ipx-primary-hover: #002dcc;
+  --ipx-primary-pressed: #0024a3;
+  --ipx-primary-gradient: linear-gradient(135deg, #003afe 0%, #002dcc 100%);
+  --ipx-bg: #fafafc;
+  --ipx-bg-soft: #f6f6f6;
+  --ipx-surface: #ffffff;
+  --ipx-surface-soft: #fafafc;
+  --ipx-fg: #1f2329;
+  --ipx-fg-muted: #45556c;
+  --ipx-fg-weak: #8b8f97;
+  --ipx-accent: #eef3ff;
+  --ipx-accent-fg: #003afe;
+  --ipx-border: #d8d8d8;
+  --ipx-border-soft: #e8e8e8;
+  --ipx-success: #00bc7d;
+  --ipx-warning: #fe9a00;
+  --ipx-danger: #ec003f;
+  --ipx-radius: 7px;
+  --ipx-radius-lg: 8px;
+  --ipx-radius-xl: 12px;
+  --ipx-radius-btn: 6px;
+  --ipx-shadow-xs: 0 1px 2px rgba(28, 43, 84, 0.04);
+  --ipx-shadow-sm: 0 8px 22px rgba(28, 43, 84, 0.05);
+  --ipx-shadow-md: 0 18px 48px rgba(28, 43, 84, 0.08);
+  --ipx-shadow-lg: 0 28px 76px rgba(28, 43, 84, 0.12);
+  --ipx-header-h: 56px;
+  --ipx-sidebar-w: 232px;
+  --ipx-content-max: 1600px;
+  --ipx-text-sm: 0.875rem;
+  --ipx-text-base: 1rem;
+  --ipx-text-lg: 1.125rem;
+  --ipx-text-xl: 1.25rem;
+  --ipx-text-2xl: 1.5rem;
+  --ipx-text-3xl: 1.875rem;
+  --ipx-text-body: 0.9375rem;
+  --ipx-control-h: 32px;
+  --ipx-table-head-h: 42px;
+  --ipx-table-row-h: 48px;
+  --ipx-form-gap: 12px;
+  --ipx-menu-item-h: 38px;
+  --ipx-menu-sub-item-h: 34px;
+  --ipx-motion-fast: 120ms cubic-bezier(0.2, 0, 0, 1);
+  --ipx-motion-base: 180ms cubic-bezier(0.2, 0, 0, 1);
+  --ipx-motion-soft: 220ms cubic-bezier(0.2, 0, 0, 1);
+  --ipx-focus-ring: 0 0 0 3px rgba(0, 58, 254, 0.08);
+  --ipx-page-inset: 22px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--ipx-bg);
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  color: var(--ipx-fg);
+  background: var(--ipx-bg);
+  font-family:
+    "PingFang SC",
+    "Microsoft YaHei",
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    "Noto Sans",
+    sans-serif;
+  font-feature-settings: "rlig" 1, "calt" 1, "tnum" 1;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+#root {
+  min-height: 100vh;
+}

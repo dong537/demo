@@ -1,0 +1,10 @@
+{"file":".trellis/spec/backend/index.md","reason":"后端实现总入口，先读目录结构和质量约束"}
+{"file":".trellis/spec/backend/error-handling.md","reason":"同步失败必须显式暴露，不能吞错或伪成功"}
+{"file":".trellis/spec/backend/quality-guidelines.md","reason":"资源同步、provider 适配器和 use case 的实现边界"}
+{"file":".trellis/spec/backend/database-guidelines.md","reason":"同步结果写库、upsert 约束和分页边界"}
+{"file":".trellis/spec/backend/logging-guidelines.md","reason":"worker/上游请求日志与同步审计约束"}
+{"file":".trellis/spec/guides/index.md","reason":"跨层思考与代码复用总指引"}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"同步链路跨 provider、repository、UI 多层"}
+{"file":".trellis/spec/api-contract.md","reason":"同步结果、错误形状和 API 契约必须统一"}
+{"file":".trellis/spec/architecture.md","reason":"确认 domain/use case/repository/adapter 边界"}
+{"timestamp":"2026-06-23T23:33:00+08:00","summary":"Fixed Proxy-Seller resident order body shape for order/calc and order/make. The adapter now sends paymentId/tarifId/coupon as the direct request body instead of wrapping it in data, matching the upstream resident API contract and unblocking PR inventory sync triggered by purchase quotes.","files":["apps/api/src/modules/providers/adapters/pr.adapter.ts","apps/api/src/modules/providers/tests/pr-adapter.spec.ts"]}

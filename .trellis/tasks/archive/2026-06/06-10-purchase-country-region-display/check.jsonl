@@ -1,0 +1,2 @@
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Verify purchase UI still submits the existing quote/order request bodies and has no fake resources."}
+{"file":".trellis/spec/frontend/type-safety.md","reason":"Verify resource display fields remain typed and optional where backend projections vary."}

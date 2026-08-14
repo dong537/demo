@@ -1,0 +1,43 @@
+.dedicated-line-workspace {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: clamp(8px, 2vw, 24px) 0 32px;
+}
+
+.dedicated-line-workspace-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-block-end: 20px;
+}
+
+.dedicated-line-workspace-header h2 { margin-block: 4px 6px; }
+.dedicated-line-workspace-header p { max-width: 720px; margin-block-end: 0; }
+.dedicated-line-eyebrow { color: var(--ipx-primary, #003afe); font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.dedicated-line-header-icon { color: var(--ipx-primary, #003afe); font-size: 30px; }
+.dedicated-line-purchase-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(280px, .8fr); gap: 16px; align-items: start; }
+.dedicated-line-form-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.dedicated-line-form-row .ant-form-item { min-width: 0; }
+.dedicated-line-quote-card { position: sticky; inset-block-start: 80px; }
+.dedicated-line-quote-list { display: grid; gap: 10px; }
+.dedicated-line-quote-row { display: flex; justify-content: space-between; gap: 12px; min-width: 0; }
+.dedicated-line-quote-row > * { min-width: 0; overflow-wrap: anywhere; }
+.dedicated-line-list-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 1fr)); gap: 16px; }
+.dedicated-line-card { min-width: 0; }
+.dedicated-line-card-meta { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 8px 12px; margin-block-end: 16px; }
+.dedicated-line-card-meta > * { min-width: 0; overflow-wrap: anywhere; }
+.dedicated-line-copy-line { overflow-wrap: anywhere; margin-block: 4px 12px; }
+.dedicated-line-client-box { margin-block-start: 16px; padding: 12px; background: #f6f8fc; border: 1px solid #e7ebf2; border-radius: 7px; }
+.dedicated-line-result { max-width: 760px; margin: 40px auto; }
+
+@media (max-width: 768px) {
+  .dedicated-line-workspace-header { flex-direction: column; }
+  .dedicated-line-header-icon { display: none; }
+  .dedicated-line-purchase-grid { grid-template-columns: 1fr; }
+  .dedicated-line-quote-card { position: static; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dedicated-line-workspace * { scroll-behavior: auto; transition-duration: 0.01ms !important; }
+}

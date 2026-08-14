@@ -1,0 +1,14 @@
+{"file":".trellis/spec/architecture.md","reason":"审查新 Module 是否有真实 leverage 和清晰 Source of Truth"}
+{"file":".trellis/spec/api-contract.md","reason":"审查错误、幂等和外部接口契约"}
+{"file":".trellis/spec/database.md","reason":"审查 schema/migration 一致性与数据边界"}
+{"file":".trellis/spec/security-permissions.md","reason":"审查 tenant scope、secret 加密与日志脱敏"}
+{"file":".trellis/spec/testing-deployment.md","reason":"执行项目质量门和部署前检查"}
+{"file":".trellis/spec/backend/database-guidelines.md","reason":"审查 Prisma 查询、事务、租约和条件更新"}
+{"file":".trellis/spec/backend/error-handling.md","reason":"审查失败不得吞掉或伪装成功"}
+{"file":".trellis/spec/backend/logging-guidelines.md","reason":"审查外部凭据和错误日志不泄漏"}
+{"file":".trellis/spec/backend/quality-guidelines.md","reason":"审查测试语义和禁止模式"}
+{"file":".trellis/spec/backend/directory-structure.md","reason":"审查 Adapter/use case/repository/worker ownership"}
+{"file":".trellis/tasks/08-11-full-stack-audit-delivery/research/current-state-audit.md","reason":"对照已确认缺口，避免旧模型冒充新能力"}
+{"file":".trellis/tasks/08-11-full-stack-audit-delivery/research/official-integration-boundary.md","reason":"核对实现未超出官方 API 证据"}
+{"file": ".trellis/tasks/08-11-full-stack-audit-delivery/design/active-active-dedicated-line-control-plane.md", "reason": "按已确认拓扑核对实现完整性和禁止降级"}
+{"file":".trellis/tasks/08-11-full-stack-audit-delivery/research/phase-1-backend-verification.md","reason":"核对 Phase 1 后端实现证据、明确留空项和禁止越界"}

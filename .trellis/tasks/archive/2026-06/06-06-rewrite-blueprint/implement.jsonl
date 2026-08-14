@@ -1,0 +1,7 @@
+{"file":"docs/BLUEPRINT.md","reason":"蓝图定义第一阶段范围、Source of Truth、模块边界和后续工程初始化路径"}
+{"file":".trellis/spec/architecture.md","reason":"实现前必须遵守项目模块边界、Source of Truth 和第一阶段范围"}
+{"file":".trellis/spec/api-contract.md","reason":"实现 API、OpenAPI 和前端类型生成时必须遵守统一契约"}
+{"file":".trellis/spec/database.md","reason":"实现 Prisma schema、迁移、资金和租户隔离时必须遵守数据库规范"}
+{"file":".trellis/spec/frontend-ui-ux.md","reason":"实现前端 Public/Customer/Admin surface 时必须遵守状态和 UI 边界"}
+{"file":".trellis/spec/security-permissions.md","reason":"实现 auth、APIKey、RBAC、审计和 secret 处理时必须遵守安全规范"}
+{"file":".trellis/spec/testing-deployment.md","reason":"实现和验证时必须遵守测试、部署门禁和 smoke check 规范"}

@@ -1,0 +1,21 @@
+{
+  "id": "19-provider-ops-cli",
+  "title": "Provider 运营 CLI + 凭据配置工具",
+  "description": "实现 PRD 要求的 Provider 运营命令（providers:health-check / sync-inventory / test-buy --dry-run），以及凭据加密写入 provider_accounts 的 CLI 工具，用于真实联调。",
+  "status": "completed",
+  "priority": "P1",
+  "phase": 4,
+  "dependsOn": [
+    "10-provider-adapter"
+  ],
+  "files": [
+    "apps/api/scripts/provider-credential.ts",
+    "apps/api/scripts/providers-health-check.ts",
+    "apps/api/scripts/providers-sync-inventory.ts",
+    "apps/api/scripts/providers-test-buy.ts",
+    "apps/api/src/common/crypto/aes-gcm.ts",
+    "apps/api/package.json"
+  ],
+  "createdAt": "2026-06-07",
+  "completedAt": "2026-06-08"
+}

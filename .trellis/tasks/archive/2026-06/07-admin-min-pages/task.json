@@ -1,0 +1,37 @@
+{
+  "id": "07-admin-min-pages",
+  "title": "Admin 最小页面",
+  "description": "在 apps/web 建立前端骨架（React + Vite + TanStack Router/Query + Ant Design），实现 Admin surface 的最小页面集：登录、用户列表、钱包流水、支付单列表、审计日志。",
+  "status": "completed",
+  "priority": "P1",
+  "phase": 2,
+  "dependsOn": [
+    "04-openapi-codegen",
+    "05-auth-apikey-rbac",
+    "06-wallet-payment-ledger"
+  ],
+  "files": [
+    "apps/web/index.html",
+    "apps/web/vite.config.ts",
+    "apps/web/src/main.tsx",
+    "apps/web/src/app/router.tsx",
+    "apps/web/src/app/providers.tsx",
+    "apps/web/src/shared/api/client.ts",
+    "apps/web/src/shared/i18n/zh.ts",
+    "apps/web/src/shared/i18n/en.ts",
+    "apps/web/src/shared/ui/page-layout.tsx",
+    "apps/web/src/routes/admin/_layout.tsx",
+    "apps/web/src/routes/admin/login.tsx",
+    "apps/web/src/routes/admin/users/index.tsx",
+    "apps/web/src/routes/admin/wallet/index.tsx",
+    "apps/web/src/routes/admin/payments/index.tsx",
+    "apps/web/src/routes/admin/audit/index.tsx",
+    "apps/web/src/features/auth/admin-login.feature.tsx",
+    "apps/web/src/features/admin-users/user-list.feature.tsx",
+    "apps/web/src/features/wallet/ledger-list.feature.tsx",
+    "apps/web/src/features/wallet/payment-list.feature.tsx",
+    "apps/web/src/features/audit/audit-log-list.feature.tsx"
+  ],
+  "createdAt": "2026-06-06",
+  "completedAt": "2026-06-08"
+}

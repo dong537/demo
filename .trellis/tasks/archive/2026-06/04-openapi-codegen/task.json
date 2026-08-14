@@ -1,0 +1,22 @@
+{
+  "id": "04-openapi-codegen",
+  "title": "OpenAPI 生成 + 前端类型生成管道",
+  "description": "用 @nestjs/swagger 从后端 schema 生成 OpenAPI JSON，再用 openapi-typescript 生成前端类型到 packages/contracts，使前后端契约有唯一来源。",
+  "status": "completed",
+  "priority": "P0",
+  "phase": 1,
+  "dependsOn": [
+    "03-api-skeleton"
+  ],
+  "files": [
+    "apps/api/src/modules/openapi/openapi.module.ts",
+    "apps/api/src/modules/openapi/openapi-setup.ts",
+    "apps/api/scripts/export-openapi.ts",
+    "packages/contracts/src/generated/api.ts",
+    "packages/contracts/src/index.ts",
+    "packages/contracts/package.json",
+    "packages/contracts/scripts/generate.sh"
+  ],
+  "createdAt": "2026-06-06",
+  "completedAt": "2026-06-08"
+}

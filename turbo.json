@@ -1,0 +1,41 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
+    },
+    "typecheck": {
+      "dependsOn": ["^build"]
+    },
+    "lint": {},
+    "test": {
+      "cache": true
+    },
+    "e2e": {
+      "dependsOn": ["build"],
+      "cache": false,
+      "passThroughEnv": [
+        "DATABASE_URL_TEST",
+        "DATABASE_URL",
+        "REDIS_URL",
+        "APP_ENCRYPTION_KEY",
+        "JWT_SECRET",
+        "APP_PLATFORM_CURRENCY",
+        "PAYMENT_CONFIRMATION_ENABLED",
+        "WEB_API_PROXY_TARGET"
+      ]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "export:openapi": {
+      "dependsOn": ["build"],
+      "outputs": ["../../packages/contracts/openapi.json"]
+    },
+    "generate": {
+      "dependsOn": ["export:openapi"]
+    }
+  }
+}

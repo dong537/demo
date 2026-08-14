@@ -1,0 +1,9 @@
+{"file":".trellis/spec/backend/index.md","reason":"校验后端实现是否符合目录和质量基线"}
+{"file":".trellis/spec/backend/error-handling.md","reason":"检查同步失败是否仍然显式暴露"}
+{"file":".trellis/spec/backend/quality-guidelines.md","reason":"检查是否存在伪成功、吞错和越界写库"}
+{"file":".trellis/spec/backend/database-guidelines.md","reason":"检查同步写库、分页和库存快照边界"}
+{"file":".trellis/spec/backend/logging-guidelines.md","reason":"检查 worker/upstream 日志是否泄漏或丢失关键字段"}
+{"file":".trellis/spec/guides/index.md","reason":"校验跨层变更的通用思考约束"}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"校验同步链路跨层一致性"}
+{"file":".trellis/spec/api-contract.md","reason":"校验同步结果和错误契约的对外形状"}
+{"timestamp":"2026-06-23T23:34:00+08:00","summary":"Verified purchase quote fix locally and in Railway. Local checks passed: api lint, api typecheck, worker typecheck, and targeted Vitest for PR adapter plus quote use case. Railway backend deployment 2eb47dcd-449c-48c9-aee9-77fa99f29994 and worker deployment ca815549-9863-4b72-937a-b44cbe092131 succeeded with intended manifests. Backend /health and /ready are ok. Worker PR inventory sync succeeded after deploy with 21262 synced resources and no Country not exists error.","checks":["pnpm --filter @ipeasy/api lint","pnpm --filter @ipeasy/api typecheck","pnpm --filter @ipeasy/api test -- src/modules/providers/tests/pr-adapter.spec.ts src/modules/pricing/use-cases/quote.use-case.spec.ts --reporter=verbose","pnpm --filter @ipeasy/worker typecheck","curl https://backend-production-43893.up.railway.app/health","curl https://backend-production-43893.up.railway.app/ready","railway logs --service worker --environment production --lines 250 --json"]}

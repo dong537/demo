@@ -1,0 +1,20 @@
+{
+  "id": "02-prisma-schema",
+  "title": "PostgreSQL + Prisma schema / migration（第一阶段）",
+  "description": "在 packages/db 中建立 Prisma schema，覆盖第一阶段 11 张核心表，生成初始 migration，导出 PrismaClient 供其他 app 使用。",
+  "status": "completed",
+  "priority": "P0",
+  "phase": 1,
+  "dependsOn": [
+    "01-monorepo-init"
+  ],
+  "files": [
+    "packages/db/package.json",
+    "packages/db/prisma/schema.prisma",
+    "packages/db/prisma/migrations/",
+    "packages/db/src/index.ts",
+    "packages/db/tsconfig.json"
+  ],
+  "createdAt": "2026-06-06",
+  "completedAt": "2026-06-08"
+}

@@ -1,0 +1,30 @@
+{
+  "id": "14-admin-resource-ui",
+  "title": "Admin 资源编排 UI + 代理管理页",
+  "description": "前端 Admin surface 新增：资源树编排（上游资源库↔平台资源映射）、库存管理、价格中心、订单履约列表、代理实例列表（含复制/续费/改密/切IP）。Customer 新增：代理列表、购买流程。",
+  "status": "completed",
+  "priority": "P1",
+  "phase": 2,
+  "dependsOn": [
+    "12-static-proxy-order",
+    "13-985proxy-openapi"
+  ],
+  "files": [
+    "apps/web/src/routes/admin/resources/index.tsx",
+    "apps/web/src/routes/admin/pricing/index.tsx",
+    "apps/web/src/routes/admin/orders/index.tsx",
+    "apps/web/src/routes/admin/proxies/index.tsx",
+    "apps/web/src/features/admin-resources/resource-tree.feature.tsx",
+    "apps/web/src/features/admin-resources/inventory-panel.feature.tsx",
+    "apps/web/src/features/pricing/price-template.feature.tsx",
+    "apps/web/src/features/admin-orders/order-list.feature.tsx",
+    "apps/web/src/features/admin-orders/fulfillment-detail.feature.tsx",
+    "apps/web/src/routes/customer/proxies/index.tsx",
+    "apps/web/src/routes/customer/buy/index.tsx",
+    "apps/web/src/features/customer-proxies/proxy-list.feature.tsx",
+    "apps/web/src/features/customer-proxies/proxy-copy-modal.tsx",
+    "apps/web/src/features/customer-proxies/buy-static-proxy.feature.tsx"
+  ],
+  "createdAt": "2026-06-07",
+  "completedAt": "2026-06-08"
+}

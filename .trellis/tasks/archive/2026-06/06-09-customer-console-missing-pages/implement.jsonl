@@ -1,0 +1,7 @@
+{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/spec/backend/index.md", "reason": "后端分层与模块结构总览"}
+{"file": ".trellis/spec/backend/database-guidelines.md", "reason": "Prisma 分页/source-of-truth/审计/租户隔离约定"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "AppError/ErrorCode/reasonKey 统一错误约定"}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "前端 feature 组件/antd/状态约定"}
+{"file": ".trellis/spec/frontend/hook-guidelines.md", "reason": "TanStack Query/userApiRequest/queryKey 约定"}
+{"file": ".trellis/tasks/06-09-customer-console-missing-pages/research/backend-customer-endpoints.md", "reason": "6 功能后端就绪调研，界定能做什么"}
