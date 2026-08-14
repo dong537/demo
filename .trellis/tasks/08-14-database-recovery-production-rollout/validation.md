@@ -89,3 +89,12 @@
 - CORS preflight from `https://frontend-test-a8da.up.railway.app` returns 204 with the matching allow-origin header.
 - Old backend service deployment `eaf06e22-da0c-44df-90aa-df15474e81be` reached `SUCCESS` with `LEGACY_PROXY_TARGET=https://backend-production-43893.up.railway.app`; the previous backend deployment `386262c1-41e1-4147-97a1-8f4a5ad739d3` remains in Railway history for rollback.
 - Old hostname checks passed: `/healthz` 200, raw capabilities 200, raw legacy 401, CORS 204, and proxied `/health` reports release `72fc85f`.
+
+## Final production gate recheck (2026-08-15)
+
+- Current backend `/health` and `/ready` remained HTTP 200; database and Redis readiness were both healthy. Current frontend and legacy proxy health endpoints remained reachable.
+- Read-only TCP checks passed for the Hong Kong node `91.149.237.33:22`, `:60701`, `:60702`, both public test domains, and the mapped NY ingress `14.116.138.238:60701/:60702`. TCP reachability does not prove SSH authentication, 3x-ui API authentication, Xray protocol handshake, or NY forwarding correctness.
+- A direct 985Proxy inventory probe returned HTTP 200 with provider code `0` after removing a hidden BOM from the locally loaded header value. The Railway variable currently contains hidden-character contamination; this must be corrected and rechecked through the persisted provider account before enabling execution.
+- The IPIPD adapter signature was checked against the official docs bundle: `METHOD + URI + second timestamp + nonce + body`, HMAC-SHA256 hex. Existing Railway IPIPD variables point at the sandbox host and do not match the supplied production credentials; the current values returned 401 signature/auth failures, and the supplied production pair also returned 401 against `https://api.ipipd.cn`. No IPIPD execution was enabled.
+- Production worker gate snapshot: payment, fulfillment, inventory sync, dedicated-line order, projection, migration, health, and Bark execution flags are all `false`; Bark device keys are absent; provider and provider-account order allowlists are empty. This is intentional fail-closed state, not a successful production approval.
+- Railway SSH access timed out before a banner, so 3x-ui panel/API authentication and NY route import cannot be claimed from TCP checks alone. The real provider/3x-ui/NY/Bark smoke gate remains open.
