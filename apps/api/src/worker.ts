@@ -26,3 +26,9 @@ export {
   ProcessDedicatedLineProjectionUseCase,
   type DedicatedLineProjectionExecutionResult,
 } from './modules/dedicated-line-projections/process-dedicated-line-projection.use-case';
+export { DedicatedLineMigrationsModule } from './modules/dedicated-line-migrations/dedicated-line-migrations.module';
+export { DedicatedLineMigrationJobRepository } from './modules/dedicated-line-migrations/dedicated-line-migration-job.repository';
+export {
+  ProcessMigrationJobUseCase,
+  type DedicatedLineMigrationExecutionResult,
+} from './modules/dedicated-line-migrations/process-migration-job.use-case';

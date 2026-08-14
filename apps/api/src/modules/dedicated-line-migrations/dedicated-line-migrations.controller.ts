@@ -6,12 +6,13 @@ import { CreateDedicatedLineMigrationUseCase } from './create-migration.use-case
 import { CommitDedicatedLineMigrationUseCase } from './commit-migration.use-case';
 import { CancelDedicatedLineMigrationUseCase } from './cancel-migration.use-case';
 import { ListDedicatedLineMigrationsUseCase } from './list-migrations.use-case';
+import { RetryDedicatedLineMigrationUseCase } from './retry-migration.use-case';
 import { ListDedicatedLineRecommendationsUseCase } from '../dedicated-line-health/list-recommendations.use-case';
 
 @Controller('admin/control-plane/lines')
 @RequireAuth()
 export class DedicatedLineMigrationsController {
-  constructor(private readonly createMigration: CreateDedicatedLineMigrationUseCase, private readonly commitMigration: CommitDedicatedLineMigrationUseCase, private readonly cancelMigration: CancelDedicatedLineMigrationUseCase, private readonly listMigrations: ListDedicatedLineMigrationsUseCase, private readonly recommendations: ListDedicatedLineRecommendationsUseCase) {}
+  constructor(private readonly createMigration: CreateDedicatedLineMigrationUseCase, private readonly commitMigration: CommitDedicatedLineMigrationUseCase, private readonly cancelMigration: CancelDedicatedLineMigrationUseCase, private readonly retryMigration: RetryDedicatedLineMigrationUseCase, private readonly listMigrations: ListDedicatedLineMigrationsUseCase, private readonly recommendations: ListDedicatedLineRecommendationsUseCase) {}
 
   @Get('recommendations')
   recommendationsList(@CurrentContext() ctx: AuthenticatedContext) {
@@ -41,5 +42,10 @@ export class DedicatedLineMigrationsController {
   @Post(':id/migrations/:migrationId/cancel')
   cancel(@CurrentContext() ctx: AuthenticatedContext, @Param('migrationId') migrationId: string) {
     return this.cancelMigration.execute(ctx, migrationId);
+  }
+
+  @Post(':id/migrations/:migrationId/retry')
+  retry(@CurrentContext() ctx: AuthenticatedContext, @Param('migrationId') migrationId: string, @Body() body: unknown) {
+    return this.retryMigration.execute(ctx, migrationId, body);
   }
 }

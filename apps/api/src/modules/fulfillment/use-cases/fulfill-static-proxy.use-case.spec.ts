@@ -111,6 +111,42 @@ describe('FulfillStaticProxyUseCase', () => {
     expect(adapter.buyStaticProxy).toHaveBeenCalledWith(expect.any(Object), runtimeConfig());
   });
 
+  it('preserves the resolved protocol and country when querying an existing upstream order', async () => {
+    const adapter = adapterMock();
+    vi.mocked(adapter.queryOrder).mockResolvedValue({
+      upstreamOrderId: 'upstream-order-1',
+      status: 'COMPLETED',
+      proxies: [
+        proxyDelivery('up-proxy-1', '203.0.113.10'),
+        proxyDelivery('up-proxy-2', '203.0.113.11'),
+      ],
+    });
+    const useCase = createUseCase(adapter);
+
+    vi.mocked(prisma.orders.findUnique).mockResolvedValue(orderRecord());
+    vi.mocked(prisma.platform_resources.findUnique).mockResolvedValue({
+      ...resourceRecord(),
+      protocol: 'SOCKS5',
+    });
+    vi.mocked(prisma.resource_mappings.findFirst).mockResolvedValue({
+      id: 'mapping-1',
+      siteId: 'site-1',
+      resourceId: 'resource-1',
+      providerCode: 'IPIPD',
+      upstreamAccountId: 'provider-account-1',
+      providerResourceId: 'line-us-ny-standard',
+      weight: 100,
+    });
+    vi.mocked(prisma.upstream_order_mirrors.findFirst).mockResolvedValue(upstreamMirrorRecord());
+
+    await expect(useCase.execute('job-1')).resolves.toMatchObject({ status: 'COMPLETED' });
+
+    expect(adapter.queryOrder).toHaveBeenCalledWith(
+      { upstreamOrderId: 'upstream-order-1', protocol: 'SOCKS5', countryCode: 'US' },
+      runtimeConfig(),
+    );
+  });
+
   it('derives the Proxy-Seller region from the mapped geographic path when the resource is still country-level', async () => {
     const adapter = adapterMock();
     const useCase = createUseCase(adapter);

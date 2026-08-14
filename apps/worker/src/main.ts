@@ -20,6 +20,9 @@ import {
   ProcessDedicatedLineProjectionUseCase,
   DedicatedLineHealthModule,
   ProcessControlNodeHealthUseCase,
+  DedicatedLineMigrationsModule,
+  DedicatedLineMigrationJobRepository,
+  ProcessMigrationJobUseCase,
   env,
 } from '@ipeasy/api/worker';
 import { FulfillmentWorker } from './fulfillment-worker';
@@ -28,9 +31,10 @@ import { DedicatedLineOrderWorker } from './dedicated-line-order-worker';
 import { BarkOutboxWorker } from './bark-outbox-worker';
 import { DedicatedLineProjectionWorker } from './dedicated-line-projection-worker';
 import { randomUUID } from 'node:crypto';
+import { DedicatedLineMigrationWorker } from './dedicated-line-migration-worker';
 
 @Module({
-  imports: [FulfillmentModule, ResourcesModule, DedicatedLineOrdersModule, DedicatedLineProjectionsModule, DedicatedLineHealthModule, AlertsModule],
+  imports: [FulfillmentModule, ResourcesModule, DedicatedLineOrdersModule, DedicatedLineProjectionsModule, DedicatedLineHealthModule, DedicatedLineMigrationsModule, AlertsModule],
 })
 class WorkerAppModule {}
 
@@ -77,6 +81,15 @@ async function bootstrap(): Promise<void> {
       workerId: `dedicated-line-projection-${randomUUID()}`,
     },
   );
+  const dedicatedLineMigrationWorker = new DedicatedLineMigrationWorker(
+    app.get(DedicatedLineMigrationJobRepository),
+    app.get(ProcessMigrationJobUseCase),
+    {
+      enabled: env.DEDICATED_LINE_MIGRATION_EXECUTION_ENABLED === 'true',
+      batchSize: env.WORKER_DEDICATED_LINE_MIGRATION_BATCH_SIZE,
+      workerId: `dedicated-line-migration-${randomUUID()}`,
+    },
+  );
   const controlNodeHealth = app.get(ProcessControlNodeHealthUseCase);
 
   console.info(`Fulfillment worker started with interval ${env.WORKER_FULFILLMENT_POLL_INTERVAL_MS}ms`);
@@ -84,12 +97,14 @@ async function bootstrap(): Promise<void> {
   console.info(`Dedicated-line order worker started with interval ${env.WORKER_DEDICATED_LINE_ORDER_POLL_INTERVAL_MS}ms`);
   console.info(`Bark outbox worker started with interval ${env.WORKER_BARK_OUTBOX_POLL_INTERVAL_MS}ms`);
   console.info(`Dedicated-line projection worker started with interval ${env.WORKER_DEDICATED_LINE_PROJECTION_POLL_INTERVAL_MS}ms`);
+  console.info(`Dedicated-line migration worker started with interval ${env.WORKER_DEDICATED_LINE_MIGRATION_POLL_INTERVAL_MS}ms`);
   console.info('Dedicated-line control-node health probe started');
   await worker.poll();
   await inventoryWorker.poll();
   await dedicatedLineOrderWorker.poll();
   await barkOutboxWorker.poll();
   await dedicatedLineProjectionWorker.poll();
+  await dedicatedLineMigrationWorker.poll();
   if (env.DEDICATED_LINE_HEALTH_EXECUTION_ENABLED === 'true') await controlNodeHealth.execute();
   const timer = setInterval(() => {
     void worker.poll();
@@ -106,6 +121,9 @@ async function bootstrap(): Promise<void> {
   const dedicatedLineProjectionTimer = setInterval(() => {
     void dedicatedLineProjectionWorker.poll();
   }, env.WORKER_DEDICATED_LINE_PROJECTION_POLL_INTERVAL_MS);
+  const dedicatedLineMigrationTimer = setInterval(() => {
+    void dedicatedLineMigrationWorker.poll();
+  }, env.WORKER_DEDICATED_LINE_MIGRATION_POLL_INTERVAL_MS);
   const controlNodeHealthTimer = setInterval(() => { if (env.DEDICATED_LINE_HEALTH_EXECUTION_ENABLED === 'true') void controlNodeHealth.execute(); }, env.WORKER_DEDICATED_LINE_PROJECTION_POLL_INTERVAL_MS);
 
   const shutdown = async (): Promise<void> => {
@@ -114,6 +132,7 @@ async function bootstrap(): Promise<void> {
     globalThis.clearInterval(dedicatedLineOrderTimer);
     globalThis.clearInterval(barkOutboxTimer);
     globalThis.clearInterval(dedicatedLineProjectionTimer);
+    globalThis.clearInterval(dedicatedLineMigrationTimer);
     globalThis.clearInterval(controlNodeHealthTimer);
     await app.close();
     process.exit(0);

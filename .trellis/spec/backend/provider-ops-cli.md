@@ -16,6 +16,8 @@
 - `pnpm --filter @ipeasy/api providers:test-buy -- --provider <nativeProvider> --site <siteId> [--tenant <tenantId>] --country <CC> [--currency <ISO3>] [--execute|--no-dry-run --confirm]`
 - `pnpm --filter @ipeasy/api resources:apply-sale-policy -- --site <siteId> [--execute]`
 - `pnpm --filter @ipeasy/api resources:replay-provider-country-selection -- --site <siteId> [--provider <nativeProvider>] [--execute]`
+- `pnpm --filter @ipeasy/api seed:line-skus -- --site <siteId> [--provider-code <nativeProvider> --provider-resource-ids <id,id>]`
+- `pnpm --filter @ipeasy/api sku:set-inventory-source -- --site <siteId> --code <skuCode> --provider-code <nativeProvider> --provider-resource-ids <id,id>`
 
 ### 3. Contracts
 
@@ -40,6 +42,11 @@
 - `resources:replay-provider-country-selection` is the repair/ops script for already-saved native provider country selections. It reads the most recently saved active site-global `provider_accounts.enabledCountryCodes` and projects that selection to same-site `platform_resources` through `ProvidersRepository.planEnabledCountrySelectionToResources()` / `applyEnabledCountrySelectionToResources()`. It must not update provider accounts, prices, inventory snapshots, mappings, credentials, or tenant-scoped provider accounts.
 - `resources:replay-provider-country-selection` follows the same saleability contract as a live provider-account save: it may restore rows hidden by `provider_country_disabled` or `provider_country_not_supported`, but it must preserve operator-manually closed rows with `provider_sale_disabled`.
 - `providers:test-buy` dry-run must use adapter `buildBuyRequest(input)` and must not call upstream. Real buy requires both an execution flag and `--confirm`.
+- `seed:line-skus` always upserts the default `SV` and `ZB` catalog contracts. With no inventory flags it must not invent a Provider mapping; on reseed it preserves an existing valid `inventorySource`. When both inventory flags are supplied, it applies that explicit source to both default SKUs.
+- `seed:line-skus` runs the complete default catalog write in one serializable transaction. It must preserve unrelated existing capabilities and must not leave one SKU updated when another SKU validation/write fails.
+- `sku:set-inventory-source` is the source-of-truth per-SKU configuration path. It updates only `capabilities.inventorySource`, preserves unrelated capabilities, accepts native Providers (`IPIPD`, `NINE_EIGHT_FIVE`, `PR`) only, and never infers or fabricates resource ids. Different mappings for `SV` and `ZB` require separate invocations. The write uses the capabilities JSON read by the command as a compare-and-set predicate; a concurrent capability change is a visible conflict rather than an overwrite. An identical normalized mapping is an idempotent no-op.
+- Inventory source input is atomic: `providerCode` and at least one non-blank `providerResourceId` must be supplied together. Partial, empty, malformed, or persisted incomplete mappings fail visibly; blank entries are not silently removed. `UPSTREAM_API` is not a native Provider inventory source.
+- Provider/SKU CLI argument parsing is closed-world: unknown flags, positional arguments, duplicate flags, and flags without values fail before any Prisma query or upstream call.
 
 ### 4. Validation & Error Matrix
 
@@ -53,6 +60,11 @@
 - `resources:apply-sale-policy` without `--execute` -> dry-run only; no DB writes.
 - `resources:replay-provider-country-selection` without `--execute` -> dry-run only; no DB writes.
 - `resources:replay-provider-country-selection --tenant <tenantId>` -> `VALIDATION_ERROR / cli_invalid_argument`, because `platform_resources` is site-scoped and tenant provider selections must not be projected onto the whole site's customer catalog.
+- Only one of `--provider-code` / `--provider-resource-ids`, an empty resource list, a blank resource entry, or `--provider-code UPSTREAM_API` -> validation failure, exit `2`; no SKU write.
+- `sku:set-inventory-source` targeting a missing SKU -> exit `1`; targeting a non-dedicated-line SKU -> validation failure, exit `2`.
+- Unknown/duplicate/positional/valueless CLI argument -> `VALIDATION_ERROR / cli_invalid_argument`, exit `2`; no DB query or write.
+- `sku:set-inventory-source` capabilities compare-and-set count `0` -> visible concurrency conflict, exit `1`; do not retry with a blind overwrite.
+- Any SKU seed validation/write failure -> serializable transaction rollback; neither `SV` nor `ZB` changes remain committed.
 
 ### 5. Good/Base/Bad Cases
 
@@ -63,6 +75,8 @@
 - Good: replaying provider country selection restores historical resources hidden as `provider_country_disabled` or `provider_country_not_supported` when the active site-global provider account now enables their country and the operator saleability policy allows the concrete line.
 - Good: replaying provider country selection leaves rows with `provider_sale_disabled` hidden so a repair run does not silently undo a manual operator close.
 - Good: `resources:replay-provider-country-selection` prints resource/saleable/hidden/changed counts in dry-run and requires `--execute` before writing.
+- Good: `seed:line-skus` preserves each SKU's unrelated capabilities and commits `SV` / `ZB` together.
+- Good: setting the already-normalized per-SKU mapping performs no update; a concurrent capability edit causes a visible conflict.
 - Base: health-check with a site and no matching account prints disabled rows and exits successfully.
 - Bad: updating newest `(siteId, providerCode)` without tenant filter, accidentally rotating a tenant credential.
 - Bad: stopping health-check at `account.status === DISABLED` before calling the registry, which hides site-global fallback behavior.
@@ -70,13 +84,20 @@
 - Bad: script writes inventory rows directly instead of calling `SyncInventoryUseCase`.
 - Bad: hard-coding saleable country arrays in both seed scripts and sync code, causing existing rows and newly synced rows to diverge.
 - Bad: using `resources:apply-sale-policy` to replay an operator's saved provider selection, because that script can overwrite `enabledCountryCodes` and price rows instead of preserving current management configuration.
+- Bad: sequentially upserting `SV` and `ZB` without a transaction, leaving a partial catalog after the second write fails.
+- Bad: updating `capabilities` by primary key only after reading it, silently overwriting another operator's concurrent change.
+- Bad: ignoring an unknown or duplicate CLI flag and proceeding with a production DB write.
 
 ### 6. Tests Required
 
 - Unit: provider CLI validation narrows credential fields and rejects invalid JSON/shape as `cli_invalid_argument`.
 - Unit: secret redaction covers `credential`, `credentialEncrypted`, `apiKey`/`apikey`, `appId`, `appSecret`, `authorization`, `token`, `username`, `password`, and `secret`.
 - Unit: provider resource selection projection must cover historical `provider_country_not_supported` rows, preservation of `provider_sale_disabled`, and IPIPD resources without a `Recommended` marker.
+- Unit: default SKU seed writes no `inventorySource`; explicit seed and per-SKU configuration persist normalized Provider/resource IDs, preserve unrelated capabilities, and reject incomplete or unsupported mappings.
+- Unit: SKU seed rolls back all catalog writes on a later failure; per-SKU mapping covers compare-and-set conflict and identical-input no-op.
+- Unit: CLI parsing rejects unknown, positional, duplicate, and valueless arguments before Prisma is accessed.
 - Type gate: because `apps/api/tsconfig.json` includes `src/**/*` only, provider scripts must be checked with a dedicated `tsc --noEmit` command that names the script entry files.
+- Type gate: `seed-line-skus.ts` and `set-line-sku-inventory-source.ts` must both be named in the dedicated script `tsc --noEmit` command.
 - Type gate: `resources:replay-provider-country-selection` must be checked with a dedicated `tsc --noEmit` command that names the script entry file.
 - Integration with real Postgres when credentials are available: `provider:set-credential` stores encrypted credential, `ProviderRegistryService` decrypts it, and CLI audit rows omit secrets.
 
@@ -92,6 +113,8 @@ await prisma.provider_accounts.findFirst({
 
 This can rotate or read the wrong tenant account.
 
+For SKU capabilities, a blind primary-key update after a read is also wrong because it can overwrite concurrent edits; sequential non-transactional default-SKU upserts can commit a partial catalog.
+
 #### Correct
 
 ```ts
@@ -99,6 +122,8 @@ await registry.getConfig(providerCode, siteId, tenantId);
 ```
 
 The registry owns tenant-first native provider credential selection and disabled-account behavior.
+
+For SKU inventory configuration, use a serializable transaction for the default catalog and a JSON compare-and-set predicate for a single-SKU update. Treat a zero-row CAS result as a conflict and identical normalized state as a no-op.
 
 ## Scenario: 985Proxy Static Zone Payload Contract
 
@@ -324,3 +349,22 @@ const countryCode = normalizeCountryCode(row);
 const providerResourceId = normalizeProviderResourceId(row);
 if (!countryCode || !providerResourceId) recordSkipped(row);
 ```
+
+## Scenario: Native Provider Delivery Protocol and Expiry
+
+### 1. Scope / Trigger
+
+- Trigger: IPIPD or 985Proxy buy/query responses are converted into `ProxyDelivery` records.
+- Applies to synchronous buy results and later order queries used by dedicated-line fulfillment.
+
+### 2. Contracts
+
+- Delivery protocol is owned by the order request. IPIPD currently documents its numeric instance protocol as combined SOCKS5+HTTP support, so that numeric value preserves the requested protocol. A recognizable single-protocol upstream string that conflicts with the request returns `UPSTREAM_ERROR / provider_delivery_protocol_mismatch`.
+- Every delivered proxy requires an explicit future upstream expiry. Missing, invalid, out-of-range, or non-future values return `UPSTREAM_ERROR / provider_delivery_expiry_invalid`; adapters must not invent `Date.now()` or a synthetic duration.
+- Numeric expiry strings accept exactly 10-digit epoch seconds or 13-digit epoch milliseconds. IPIPD documents `expiresAt` as epoch milliseconds. 985Proxy documents its timezone-less `YYYY-MM-DD HH:mm:ss` response format in UTC, so it must be parsed as UTC rather than host-local time.
+
+### 3. Tests Required
+
+- IPIPD: synchronous buy and order query preserve requested SOCKS5; explicit single-protocol conflicts fail.
+- IPIPD and 985Proxy: missing, malformed, expired, epoch-seconds, and epoch-milliseconds cases.
+- 985Proxy: official timezone-less expiry parses to the same UTC instant on every host timezone.

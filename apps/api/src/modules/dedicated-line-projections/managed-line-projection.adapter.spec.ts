@@ -78,6 +78,16 @@ describe('ManagedLineProjectionAdapter', () => {
     });
   });
 
+  it.each([400, 422])('maps remote input status %s to a non-retryable validation error', async (status) => {
+    const fetchImpl = vi.fn<typeof fetch>().mockResolvedValue(new Response(null, { status }));
+    const adapter = new ManagedLineProjectionAdapter({ get: (key: string) => key === 'APP_ENCRYPTION_KEY' ? encryptionKey : 10_000 } as never, fetchImpl);
+
+    await expect(adapter.delete(node(), 'line-1-node-1', 3)).rejects.toMatchObject({
+      code: ErrorCode.VALIDATION_ERROR,
+      reasonKey: 'managed_line_projection_request_invalid',
+    });
+  });
+
   it('rejects unsafe control-node URLs before making a request', async () => {
     const fetchImpl = vi.fn<typeof fetch>();
     const adapter = new ManagedLineProjectionAdapter({ get: (key: string) => key === 'APP_ENCRYPTION_KEY' ? encryptionKey : 10_000 } as never, fetchImpl);
@@ -86,5 +96,110 @@ describe('ManagedLineProjectionAdapter', () => {
       code: ErrorCode.VALIDATION_ERROR,
     });
     expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it('treats a remote 404 delete as idempotent success', async () => {
+    const fetchImpl = vi.fn<typeof fetch>().mockResolvedValue(new Response(null, { status: 404 }));
+    const adapter = new ManagedLineProjectionAdapter({ get: (key: string) => key === 'APP_ENCRYPTION_KEY' ? encryptionKey : 10_000 } as never, fetchImpl);
+
+    await expect(adapter.delete(node(), 'line-1-node-1', 3)).resolves.toBeUndefined();
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(fetchImpl.mock.calls[0]?.[1]?.method).toBe('DELETE');
+  });
+
+  it('confirms a successful remote delete with a 404 read-back', async () => {
+    const fetchImpl = vi.fn<typeof fetch>()
+      .mockResolvedValueOnce(new Response(JSON.stringify({
+        projectionKey: 'line-1-node-1', desiredVersion: 3, observedVersion: 3,
+        desiredHash: 'desired-hash', observedHash: 'desired-hash', status: 'DELETED',
+      }), { status: 200, headers: { 'content-type': 'application/json' } }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }));
+    const adapter = new ManagedLineProjectionAdapter({ get: (key: string) => key === 'APP_ENCRYPTION_KEY' ? encryptionKey : 10_000 } as never, fetchImpl);
+
+    await expect(adapter.delete(node(), 'line-1-node-1', 3)).resolves.toBeUndefined();
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+    expect(fetchImpl.mock.calls[1]?.[1]?.method).toBe('GET');
+  });
+
+  it('accepts a 204 delete response and still requires a 404 read-back', async () => {
+    const fetchImpl = vi.fn<typeof fetch>()
+      .mockResolvedValueOnce(new Response(null, { status: 204 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }));
+    const adapter = new ManagedLineProjectionAdapter({ get: (key: string) => key === 'APP_ENCRYPTION_KEY' ? encryptionKey : 10_000 } as never, fetchImpl);
+
+    await expect(adapter.delete(node(), 'line-1-node-1', 3)).resolves.toBeUndefined();
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+  });
+
+  it('accepts the matching OpenUI DELETED tombstone as confirmed deletion', async () => {
+    const tombstone = {
+      projectionKey: 'line-1-node-1', desiredVersion: 3, observedVersion: 3,
+      desiredHash: 'deleted', observedHash: 'deleted', status: 'DELETED',
+    };
+    const fetchImpl = vi.fn<typeof fetch>()
+      .mockResolvedValueOnce(new Response(JSON.stringify(tombstone), { status: 200 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify(tombstone), { status: 200 }));
+    const adapter = new ManagedLineProjectionAdapter({ get: (key: string) => key === 'APP_ENCRYPTION_KEY' ? encryptionKey : 10_000 } as never, fetchImpl);
+
+    await expect(adapter.delete(node(), 'line-1-node-1', 3)).resolves.toBeUndefined();
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+  });
+
+  it('rejects a stale DELETED tombstone', async () => {
+    const fetchImpl = vi.fn<typeof fetch>()
+      .mockResolvedValueOnce(new Response(JSON.stringify({
+        projectionKey: 'line-1-node-1', desiredVersion: 3, observedVersion: 3,
+        desiredHash: 'deleted', observedHash: 'deleted', status: 'DELETED',
+      }), { status: 200 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({
+        projectionKey: 'line-1-node-1', desiredVersion: 2, observedVersion: 2,
+        desiredHash: 'old', observedHash: 'old', status: 'DELETED',
+      }), { status: 200 }));
+    const adapter = new ManagedLineProjectionAdapter({ get: (key: string) => key === 'APP_ENCRYPTION_KEY' ? encryptionKey : 10_000 } as never, fetchImpl);
+
+    await expect(adapter.delete(node(), 'line-1-node-1', 3)).rejects.toMatchObject({
+      reasonKey: 'managed_line_projection_delete_not_confirmed',
+    });
+  });
+
+  it('recovers an idempotent replay when OpenUI returns 409 for an existing tombstone', async () => {
+    const tombstone = {
+      projectionKey: 'line-1-node-1', desiredVersion: 3, observedVersion: 3,
+      desiredHash: '', observedHash: '', status: 'DELETED',
+    };
+    const fetchImpl = vi.fn<typeof fetch>()
+      .mockResolvedValueOnce(new Response(null, { status: 409 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify(tombstone), { status: 200 }));
+    const adapter = new ManagedLineProjectionAdapter({ get: (key: string) => key === 'APP_ENCRYPTION_KEY' ? encryptionKey : 10_000 } as never, fetchImpl);
+
+    await expect(adapter.delete(node(), 'line-1-node-1', 3)).resolves.toBeUndefined();
+  });
+
+  it('preserves a delete conflict when a 409 read-back returns 404', async () => {
+    const fetchImpl = vi.fn<typeof fetch>()
+      .mockResolvedValueOnce(new Response(null, { status: 409 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }));
+    const adapter = new ManagedLineProjectionAdapter({ get: (key: string) => key === 'APP_ENCRYPTION_KEY' ? encryptionKey : 10_000 } as never, fetchImpl);
+
+    await expect(adapter.delete(node(), 'line-1-node-1', 3)).rejects.toMatchObject({
+      code: ErrorCode.IDEMPOTENCY_CONFLICT,
+      reasonKey: 'managed_line_projection_conflict',
+    });
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+  });
+
+  it('preserves a true OpenUI delete conflict when read-back is not the exact tombstone', async () => {
+    const fetchImpl = vi.fn<typeof fetch>()
+      .mockResolvedValueOnce(new Response(null, { status: 409 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({
+        projectionKey: 'line-1-node-1', desiredVersion: 2, observedVersion: 2,
+        desiredHash: 'active', observedHash: 'active', status: 'ACTIVE',
+      }), { status: 200 }));
+    const adapter = new ManagedLineProjectionAdapter({ get: (key: string) => key === 'APP_ENCRYPTION_KEY' ? encryptionKey : 10_000 } as never, fetchImpl);
+
+    await expect(adapter.delete(node(), 'line-1-node-1', 3)).rejects.toMatchObject({
+      code: ErrorCode.IDEMPOTENCY_CONFLICT,
+      reasonKey: 'managed_line_projection_conflict',
+    });
   });
 });

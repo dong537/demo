@@ -113,7 +113,11 @@ export class FulfillStaticProxyUseCase {
         orderBy: { createdAt: 'desc' },
       });
       const buyResult = existingMirror
-        ? await adapter.queryOrder({ upstreamOrderId: existingMirror.upstreamOrderId }, providerConfig)
+        ? await adapter.queryOrder({
+            upstreamOrderId: existingMirror.upstreamOrderId,
+            protocol: buyInput.protocol === 'SOCKS5' ? 'SOCKS5' : 'HTTP',
+            countryCode: buyInput.countryCode,
+          }, providerConfig)
         : await createUpstreamOrderMirror(
             await adapter.buyStaticProxy(buyInput, providerConfig),
             order,

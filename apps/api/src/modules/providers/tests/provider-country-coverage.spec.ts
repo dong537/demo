@@ -306,7 +306,7 @@ describe('provider country coverage', () => {
                     username: 'user',
                     password: 'pass',
                     countryCode: 'JPN',
-                    expiresAt: '1750000000000',
+                    expiresAt: '4102444800000',
                   },
                 ],
               },

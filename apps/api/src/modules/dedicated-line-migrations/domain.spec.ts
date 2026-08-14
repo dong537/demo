@@ -81,6 +81,13 @@ describe('dedicated line migration domain', () => {
     )).toEqual({ type: 'FULL', phase: 'CLEANUP', status: 'CANCELLED' });
   });
 
+  it('cancels EXIT_ONLY verification without demanding a rollback route', () => {
+    expect(assertMigrationTransition(
+      { type: 'EXIT_ONLY', phase: 'VERIFY', status: 'ACTIVE' },
+      { type: 'CANCEL' },
+    )).toEqual({ type: 'EXIT_ONLY', phase: 'CLEANUP', status: 'CANCELLED' });
+  });
+
   it('does not allow a committed migration to be cancelled', () => {
     expect(() => assertMigrationTransition(
       { type: 'FULL', phase: 'CLEANUP', status: 'ACTIVE' },

@@ -12,7 +12,7 @@
   "assignee": "rewrite-residential-proxy-platform",
   "createdAt": "2026-08-11",
   "completedAt": null,
-  "branch": "feat/dedicated-line-control-plane",
+  "branch": "codex/production-readiness",
   "base_branch": "master",
   "worktree_path": null,
   "commit": null,

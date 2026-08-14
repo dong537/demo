@@ -41,6 +41,12 @@ export class CreateDedicatedLineMigrationUseCase {
       const sourceNodeIds = line.placement.nodes.map((node) => node.nodeId);
       const targetNodeIds = input.type === 'EXIT_ONLY' ? sourceNodeIds : input.targetNodeIds;
       const delta = computeNodeDelta(sourceNodeIds, targetNodeIds);
+      if (input.type === 'EXIT_ONLY') {
+        throw new AppError(ErrorCode.VALIDATION_ERROR, 'migration_exit_only_staging_unsupported', 422);
+      }
+      if (delta.retained.length > 0) {
+        throw new AppError(ErrorCode.VALIDATION_ERROR, 'migration_retained_node_staging_unsupported', 422);
+      }
       const policy = line.placement.policyId
         ? await tx.line_placement_policies.findUnique({ where: { id: line.placement.policyId }, include: { allowedNodes: true } })
         : null;

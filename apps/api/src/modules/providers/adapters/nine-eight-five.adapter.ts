@@ -18,6 +18,7 @@ import {
   ProviderOrderResult,
 } from '../provider.types';
 import { UpstreamLogRepository } from '../upstream-log.repository';
+import { requireFutureDeliveryExpiry } from '../provider-delivery-expiry';
 
 interface Envelope<T = unknown> {
   code: number;
@@ -311,25 +312,25 @@ export class NineEightFiveAdapter implements ProviderAdapter {
       order_item_id?: string | number;
     };
 
-    return (raw as ProxyDTO[]).map((proxy) => ({
-      upstreamProxyId: optionalString(proxy.proxy_id ?? proxy.id ?? proxy.order_item_id),
-      ip: String(proxy.ip ?? ''),
-      username: String(proxy.username ?? proxy.login ?? ''),
-      password: String(proxy.password ?? ''),
-      protocol,
-      // The official static API returns a single `port` in its IP list. Some
-      // account variants also expose protocol-specific ports; prefer the
-      // SOCKS5 port when the dedicated-line job explicitly requested it.
-      port: protocol === 'SOCKS5'
-        ? Number(proxy.port_socks ?? proxy.port ?? proxy.port_http ?? 0)
-        : Number(proxy.port_http ?? proxy.port ?? proxy.port_socks ?? 0),
-      expiresAt: proxy.expire_time
-        ? new Date(proxy.expire_time)
-        : proxy.expire
-          ? new Date(proxy.expire)
-          : new Date(Date.now() + 30 * 86400 * 1000),
-      countryCode: String(proxy.zone ?? proxy.country ?? defaultCountry),
-    }));
+    return (raw as ProxyDTO[]).map((proxy) => {
+      const expiry = proxy.expire_time ?? proxy.expire;
+      const expiresAt = requireFutureDeliveryExpiry(expiry, { timezoneLessUtc: true });
+      return {
+        upstreamProxyId: optionalString(proxy.proxy_id ?? proxy.id ?? proxy.order_item_id),
+        ip: String(proxy.ip ?? ''),
+        username: String(proxy.username ?? proxy.login ?? ''),
+        password: String(proxy.password ?? ''),
+        protocol,
+        // The official static API returns a single `port` in its IP list. Some
+        // account variants also expose protocol-specific ports; prefer the
+        // SOCKS5 port when the dedicated-line job explicitly requested it.
+        port: protocol === 'SOCKS5'
+          ? Number(proxy.port_socks ?? proxy.port ?? proxy.port_http ?? 0)
+          : Number(proxy.port_http ?? proxy.port ?? proxy.port_socks ?? 0),
+        expiresAt,
+        countryCode: String(proxy.zone ?? proxy.country ?? defaultCountry),
+      };
+    });
   }
 }
 

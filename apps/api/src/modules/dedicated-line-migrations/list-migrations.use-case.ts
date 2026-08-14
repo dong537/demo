@@ -45,6 +45,9 @@ type MigrationListRow = {
   updatedAt: Date;
   committedAt: Date | null;
   finishedAt: Date | null;
+  lastErrorCode: string | null;
+  lastErrorDetail: unknown;
+  retryCount: number;
   nodes: Array<{ nodeId: string; role: string; reservationStatus: string; projectionId: string | null; node: { id: string; code: string; regionCode: string } }>;
   smokeObservations: Array<{ id: string; stage: string; hostname: string; verified: boolean; observedIp: string | null; observedCountryCode: string | null; latencyMs: number | null; failureType: string | null; observedAt: Date; freshUntil: Date }>;
   dedicatedLine: { id: string; status: string; desiredVersion: number; domains: Array<{ hostname: string; port: number; role: string }> };
@@ -63,6 +66,7 @@ function serialize(row: MigrationListRow) {
     if (row.phase === 'PREPARE' || row.phase === 'CANARY_ROUTE' || row.phase === 'VERIFY') actions.push('CANCEL');
   }
   if (row.status === 'NEEDS_OPERATOR' && row.phase === 'ROLLBACK') actions.push('IMPORT_ROLLBACK');
+  if (row.status === 'NEEDS_OPERATOR' && ['PREPARE', 'VERIFY', 'CLEANUP'].includes(row.phase)) actions.push('RETRY');
   return {
     id: row.id, lineId: row.dedicatedLineId, type: row.type, phase: row.phase, status: row.status,
     sourceLineVersion: row.sourceLineVersion, targetLineVersion: row.targetLineVersion,
@@ -73,6 +77,7 @@ function serialize(row: MigrationListRow) {
     smokeObservations: row.smokeObservations.map((smoke) => ({ id: smoke.id, stage: smoke.stage, hostname: smoke.hostname, verified: smoke.verified, observedIp: smoke.observedIp, observedCountryCode: smoke.observedCountryCode, latencyMs: smoke.latencyMs, failureType: smoke.failureType, observedAt: smoke.observedAt, freshUntil: smoke.freshUntil })),
     routes: { canary: row.canaryRouteImport, cutover: row.cutoverRouteImport, rollback: row.rollbackRouteImport },
     allowedActions: actions,
+    lastErrorCode: row.lastErrorCode, lastErrorDetail: row.lastErrorDetail, retryCount: row.retryCount,
     createdAt: row.createdAt, updatedAt: row.updatedAt, committedAt: row.committedAt, finishedAt: row.finishedAt,
   };
 }

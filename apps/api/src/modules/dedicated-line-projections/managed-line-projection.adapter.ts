@@ -57,18 +57,45 @@ export class ManagedLineProjectionAdapter {
   ) {}
 
   async upsert(node: ManagedLineProjectionNode, projectionKey: string, request: ManagedLineProjectionRequest): Promise<ManagedLineProjectionResponse> {
-    return this.request(node, 'PUT', projectionKey, request);
+    const response = await this.request(node, 'PUT', projectionKey, request);
+    if (!response) throw new AppError(ErrorCode.UPSTREAM_ERROR, 'managed_line_response_invalid', 502);
+    return response;
   }
 
   async get(node: ManagedLineProjectionNode, projectionKey: string): Promise<ManagedLineProjectionResponse> {
-    return this.request(node, 'GET', projectionKey);
+    const response = await this.request(node, 'GET', projectionKey);
+    if (!response) throw new AppError(ErrorCode.UPSTREAM_ERROR, 'managed_line_response_invalid', 502);
+    return response;
   }
 
-  async delete(node: ManagedLineProjectionNode, projectionKey: string, desiredVersion: number): Promise<ManagedLineProjectionResponse> {
+  async delete(node: ManagedLineProjectionNode, projectionKey: string, desiredVersion: number): Promise<void> {
     if (!Number.isInteger(desiredVersion) || desiredVersion < 1) {
       throw new AppError(ErrorCode.VALIDATION_ERROR, 'managed_line_desired_version_invalid', 400);
     }
-    return this.request(node, 'DELETE', projectionKey, undefined, { desiredVersion: String(desiredVersion) });
+    let deleteConflict: AppError | null = null;
+    try {
+      await this.request(node, 'DELETE', projectionKey, undefined, { desiredVersion: String(desiredVersion) });
+    } catch (error: unknown) {
+      if (isProjectionNotFound(error)) return;
+      if (!isProjectionConflict(error)) throw error;
+      deleteConflict = error;
+    }
+    try {
+      const observed = await this.get(node, projectionKey);
+      if (
+        observed.status === 'DELETED'
+        && observed.desiredVersion === desiredVersion
+        && observed.observedVersion === desiredVersion
+      ) return;
+    } catch (error: unknown) {
+      if (isProjectionNotFound(error)) {
+        if (deleteConflict) throw deleteConflict;
+        return;
+      }
+      throw error;
+    }
+    if (deleteConflict) throw deleteConflict;
+    throw new AppError(ErrorCode.UPSTREAM_ERROR, 'managed_line_projection_delete_not_confirmed', 502);
   }
 
   private async request(
@@ -77,7 +104,7 @@ export class ManagedLineProjectionAdapter {
     projectionKey: string,
     body?: ManagedLineProjectionRequest,
     query?: Record<string, string>,
-  ): Promise<ManagedLineProjectionResponse> {
+  ): Promise<ManagedLineProjectionResponse | undefined> {
     validateProjectionKey(projectionKey);
     const baseUrl = normalizeBaseUrl(node.baseUrl);
     assertSafeUrl(baseUrl);
@@ -100,6 +127,7 @@ export class ManagedLineProjectionAdapter {
       throw new AppError(ErrorCode.UPSTREAM_ERROR, 'managed_line_request_failed', 502);
     }
     if (!response.ok) throw mapRemoteError(response);
+    if (method === 'DELETE' && response.status === 204) return undefined;
     let payload: unknown;
     try {
       payload = await response.json();
@@ -126,6 +154,14 @@ export class ManagedLineProjectionAdapter {
   }
 }
 
+function isProjectionNotFound(error: unknown): boolean {
+  return error instanceof AppError && error.code === ErrorCode.NOT_FOUND && error.reasonKey === 'managed_line_projection_not_found';
+}
+
+function isProjectionConflict(error: unknown): error is AppError {
+  return error instanceof AppError && error.code === ErrorCode.IDEMPOTENCY_CONFLICT && error.reasonKey === 'managed_line_projection_conflict';
+}
+
 function normalizeBaseUrl(value: string): string {
   const trimmed = value.trim().replace(/\/+$/, '');
   if (!trimmed) throw new AppError(ErrorCode.CONTROL_NODE_CONFIG_INVALID, 'control_node_base_url_missing', 500);
@@ -150,6 +186,9 @@ function mapRemoteError(response: Response): AppError {
     case 408:
     case 429:
       return new AppError(ErrorCode.UPSTREAM_TIMEOUT, 'managed_line_control_node_busy', 504);
+    case 400:
+    case 422:
+      return new AppError(ErrorCode.VALIDATION_ERROR, 'managed_line_projection_request_invalid', 422);
     default:
       return new AppError(ErrorCode.UPSTREAM_ERROR, 'managed_line_control_node_error', 502);
   }

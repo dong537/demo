@@ -116,7 +116,7 @@ describe('buildBuyRequest upstream order request structure', () => {
     });
 
     it('adds configured static zone to official buy payload', () => {
-      process.env['UPSTREAM_985PROXY_STATIC_ZONE'] = '4sd72p1bvlha';
+      process.env['UPSTREAM_985PROXY_STATIC_ZONE'] = 'test-zone-id';
 
       const req = adapter.buildBuyRequest(baseInput({ countryCode: 'TW' }));
 
@@ -124,7 +124,7 @@ describe('buildBuyRequest upstream order request structure', () => {
         static_proxy_type: 'premium',
         time_period: 30,
         pay_type: 'balance',
-        zone: '4sd72p1bvlha',
+        zone: 'test-zone-id',
         buy_data: [{ country: 'TW', city: '', count: 1 }],
       });
     });

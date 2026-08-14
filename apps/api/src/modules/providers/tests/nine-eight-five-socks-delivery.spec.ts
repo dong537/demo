@@ -18,6 +18,7 @@ describe('NineEightFiveAdapter SOCKS5 delivery', () => {
             username: 'line-user',
             password: 'line-pass',
             country: 'HK',
+            expire_time: '2100-01-01T00:00:00.000Z',
           }],
         },
       }),
@@ -37,7 +38,13 @@ describe('NineEightFiveAdapter SOCKS5 delivery', () => {
         msg: 'success',
         data: {
           status: 'pending',
-          proxy_list: [{ ip: '203.0.113.10', port: 1081, username: 'u', password: 'p' }],
+          proxy_list: [{
+            ip: '203.0.113.10',
+            port: 1081,
+            username: 'u',
+            password: 'p',
+            expire_time: '2100-01-01T00:00:00.000Z',
+          }],
         },
       }),
     }));

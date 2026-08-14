@@ -14,3 +14,4 @@
 {"file":".trellis/tasks/08-11-full-stack-audit-delivery/research/official-integration-boundary.md","reason":"3x-ui/Xray/Zeabur 官方能力边界"}
 {"file": ".trellis/tasks/08-11-full-stack-audit-delivery/design/active-active-dedicated-line-control-plane.md", "reason": "主动-主动副本、NY 外部确认、库存 Saga、限速和安全的权威设计"}
 {"file":".trellis/tasks/08-11-full-stack-audit-delivery/research/phase-1-backend-verification.md","reason":"Phase 1 SKU 目录、报价和静态购买禁售的已实现边界与未验证项"}
+{"file":".trellis/tasks/08-11-full-stack-audit-delivery/research/production-coverage-audit.md","reason":"生产迁移不可达、远端投影清理缺失和提交状态提前 ACTIVE 的已确认缺口"}

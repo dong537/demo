@@ -10,6 +10,7 @@ describe('default line SKU seed', () => {
       expect(sku.isVisible).toBe(true);
       expect(sku.contractVersion).toBe(1);
       expect(sku.capabilities).toMatchObject({ delivery: 'dedicated-line' });
+      expect(sku.capabilities).not.toHaveProperty('inventorySource');
     }
   });
 });

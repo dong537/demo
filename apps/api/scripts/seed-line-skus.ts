@@ -1,38 +1,18 @@
 // Seed the initial dedicated-line SKU catalog for one site.
-// Usage: pnpm --filter @ipeasy/api seed:line-skus -- --site <siteId>
+// Usage: pnpm --filter @ipeasy/api seed:line-skus -- --site <siteId> [--provider-code <providerCode> --provider-resource-ids <id,id>]
 import './_cli-bootstrap';
 import { prisma } from '@ipeasy/db';
-import { parseArgs, requireString } from './_cli-args';
-import { DEFAULT_LINE_SKUS } from '../src/modules/catalog/sku-seed';
+import {
+  parseSeedLineSkuCliArgs,
+  SkuInventorySourceValidationError,
+} from '../src/modules/catalog/sku-inventory-source';
+import { seedLineSkus } from '../src/modules/catalog/sku-inventory-source.service';
 
-export async function seedLineSkus(siteId: string): Promise<{ upserted: number; codes: string[] }> {
-  for (const sku of DEFAULT_LINE_SKUS) {
-    const capabilities = {
-      ...sku.capabilities,
-      supportedProtocols: [...sku.capabilities.supportedProtocols],
-    };
-    await prisma.service_skus.upsert({
-      where: { siteId_code: { siteId, code: sku.code } },
-      create: { siteId, ...sku, capabilities },
-      update: {
-        name: sku.name,
-        description: sku.description,
-        capabilities,
-        contractVersion: sku.contractVersion,
-        isActive: sku.isActive,
-        isVisible: sku.isVisible,
-        sortOrder: sku.sortOrder,
-      },
-    });
-  }
-
-  return { upserted: DEFAULT_LINE_SKUS.length, codes: DEFAULT_LINE_SKUS.map((sku) => sku.code) };
-}
+export { seedLineSkus } from '../src/modules/catalog/sku-inventory-source.service';
 
 async function main(): Promise<void> {
-  const args = parseArgs(process.argv.slice(2));
-  const siteId = requireString(args, 'site');
-  const result = await seedLineSkus(siteId);
+  const input = parseSeedLineSkuCliArgs(process.argv.slice(2));
+  const result = await seedLineSkus(input.siteId, input.inventorySource);
   console.log(`Seeded dedicated-line SKUs: ${result.codes.join(', ')}`);
 }
 
@@ -45,6 +25,6 @@ if (require.main === module) {
     .catch(async (err) => {
       console.error('Seed dedicated-line SKUs failed:', err instanceof Error ? err.message : String(err));
       await prisma.$disconnect();
-      process.exit(1);
+      process.exit(err instanceof SkuInventorySourceValidationError ? 2 : 1);
     });
 }

@@ -3,6 +3,7 @@ packages:
   - "packages/*"
 
 overrides:
+  "@nestjs/swagger@11.4.6>js-yaml": "5.2.2"
   "brace-expansion@<1.1.18": "1.1.18"
   "brace-expansion@>=2.0.0 <2.1.4": "2.1.4"
   "brace-expansion@>=3.0.0 <5.0.9": "5.0.9"

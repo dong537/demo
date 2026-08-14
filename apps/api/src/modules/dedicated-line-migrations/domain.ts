@@ -92,7 +92,7 @@ function cancel(state: MigrationState): MigrationState {
     throw new AppError(ErrorCode.IDEMPOTENCY_CONFLICT, 'migration_already_committed', 409);
   }
   if (state.status !== 'ACTIVE') invalidTransition();
-  if (state.phase === 'PREPARE' || state.phase === 'CANARY_ROUTE') {
+  if (state.phase === 'PREPARE' || state.phase === 'CANARY_ROUTE' || (state.type === 'EXIT_ONLY' && state.phase === 'VERIFY')) {
     return { ...state, phase: 'CLEANUP', status: 'CANCELLED' };
   }
   return { ...state, phase: 'ROLLBACK', status: 'NEEDS_OPERATOR' };

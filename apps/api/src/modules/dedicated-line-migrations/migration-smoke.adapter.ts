@@ -15,17 +15,26 @@ export class MigrationSmokeAdapter {
     const targetUrl = this.config.get('DEDICATED_LINE_MIGRATION_SMOKE_TARGET_URL');
     assertSafeUrl(targetUrl);
     const started = Date.now();
+    let response: Response;
     try {
-      const response = await fetchWithTimeout(`${targetUrl}?hostname=${encodeURIComponent(hostname)}&port=${port}`, { headers: { accept: 'application/json' } }, this.config.get('DEDICATED_LINE_MIGRATION_SMOKE_TIMEOUT_MS'), this.fetchImpl);
-      const latencyMs = Date.now() - started;
-      if (!response.ok) return { verified: false, observedIp: null, observedCountry: null, latencyMs, stabilitySamples: 1, failureCode: `HTTP_${response.status}`, detail: { stage: 'protocol' } };
-      const payload = await response.json() as Record<string, unknown>;
-      const observedIp = typeof payload.ip === 'string' ? payload.ip : null;
-      const observedCountry = typeof payload.country === 'string' ? payload.country : null;
-      if (!observedIp || !observedCountry) return { verified: false, observedIp, observedCountry, latencyMs, stabilitySamples: 1, failureCode: 'TARGET_RESPONSE_INVALID', detail: { stage: 'protocol' } };
-      return { verified: true, observedIp, observedCountry, latencyMs, stabilitySamples: 1, failureCode: null, detail: { stage: 'protocol' } };
-    } catch {
-      throw new AppError(ErrorCode.UPSTREAM_TIMEOUT, 'dedicated_line_migration_smoke_timeout', 504);
+      response = await fetchWithTimeout(`${targetUrl}?hostname=${encodeURIComponent(hostname)}&port=${port}`, { headers: { accept: 'application/json' } }, this.config.get('DEDICATED_LINE_MIGRATION_SMOKE_TIMEOUT_MS'), this.fetchImpl);
+    } catch (error: unknown) {
+      if (error instanceof AppError && error.code === ErrorCode.UPSTREAM_TIMEOUT) {
+        throw new AppError(ErrorCode.UPSTREAM_TIMEOUT, 'dedicated_line_migration_smoke_timeout', 504);
+      }
+      throw new AppError(ErrorCode.UPSTREAM_ERROR, 'dedicated_line_migration_smoke_network_error', 502);
     }
+    const latencyMs = Date.now() - started;
+    if (!response.ok) return { verified: false, observedIp: null, observedCountry: null, latencyMs, stabilitySamples: 1, failureCode: `HTTP_${response.status}`, detail: { stage: 'protocol' } };
+    let payload: Record<string, unknown>;
+    try {
+      payload = await response.json() as Record<string, unknown>;
+    } catch {
+      return { verified: false, observedIp: null, observedCountry: null, latencyMs, stabilitySamples: 1, failureCode: 'TARGET_RESPONSE_INVALID', detail: { stage: 'protocol' } };
+    }
+    const observedIp = typeof payload.ip === 'string' ? payload.ip : null;
+    const observedCountry = typeof payload.country === 'string' ? payload.country : null;
+    if (!observedIp || !observedCountry) return { verified: false, observedIp, observedCountry, latencyMs, stabilitySamples: 1, failureCode: 'TARGET_RESPONSE_INVALID', detail: { stage: 'protocol' } };
+    return { verified: true, observedIp, observedCountry, latencyMs, stabilitySamples: 1, failureCode: null, detail: { stage: 'protocol' } };
   }
 }

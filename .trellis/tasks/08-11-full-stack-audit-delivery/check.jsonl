@@ -12,3 +12,4 @@
 {"file":".trellis/tasks/08-11-full-stack-audit-delivery/research/official-integration-boundary.md","reason":"核对实现未超出官方 API 证据"}
 {"file": ".trellis/tasks/08-11-full-stack-audit-delivery/design/active-active-dedicated-line-control-plane.md", "reason": "按已确认拓扑核对实现完整性和禁止降级"}
 {"file":".trellis/tasks/08-11-full-stack-audit-delivery/research/phase-1-backend-verification.md","reason":"核对 Phase 1 后端实现证据、明确留空项和禁止越界"}
+{"file":".trellis/tasks/08-11-full-stack-audit-delivery/research/production-coverage-audit.md","reason":"复核迁移状态机、远端清理和资源释放缺口均已关闭"}

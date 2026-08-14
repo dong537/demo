@@ -36,6 +36,7 @@
     "site:set-domain": "ts-node -r tsconfig-paths/register scripts/set-site-domain.ts",
     "seed:pricing": "ts-node -r tsconfig-paths/register scripts/seed-pricing.ts",
     "seed:line-skus": "ts-node -r tsconfig-paths/register scripts/seed-line-skus.ts",
+    "sku:set-inventory-source": "ts-node -r tsconfig-paths/register scripts/set-line-sku-inventory-source.ts",
     "seed:customer": "ts-node -r tsconfig-paths/register scripts/seed-customer.ts",
     "seed:admin": "ts-node -r tsconfig-paths/register scripts/seed-admin.ts",
     "seed:resources": "ts-node -r tsconfig-paths/register scripts/seed-resources.ts",

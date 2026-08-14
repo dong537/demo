@@ -116,6 +116,7 @@ pnpm --filter @ipeasy/contracts typecheck
 - `ALLOW_PLACEHOLDER_APIKEYS=false`。
 - `ALLOW_LOCAL_DEV_APIKEY=false`。
 - Provider fulfillment 开启时必须配置 allowlist。
+- 专线订单执行默认关闭；生产启用 `DEDICATED_LINE_ORDER_EXECUTION_ENABLED=true` 时，必须同时配置至少一个专线订单 provider/account allowlist，并启用投影执行、Provider 库存同步和 Bark 告警；Bark 告警必须至少配置一个 device key。
 - payment confirmation 开启前必须完成支付签名验证、人工确认 RBAC、对账和审计。
 
 ## Smoke Check
@@ -165,6 +166,7 @@ curl -fsS https://api.ipipx.365proxy.net/openapi.json
 - Web API requests in the browser must use the same-origin `/api` proxy on Railway, while `WEB_API_PROXY_TARGET` drives the frontend server proxy to the backend service. Relative `/api/*` remains valid for local/test setups.
 - Worker is a background process. It must not expose HTTP traffic or use the API service start command.
 - Real fulfillment requires both `PROVIDER_FULFILLMENT_EXECUTION_ENABLED=true` and at least one allowlist entry in provider or upstream-account allowlist. Startup must fail in production if execution is enabled with both allowlists empty.
+- Real dedicated-line order execution requires all of: `DEDICATED_LINE_ORDER_EXECUTION_ENABLED=true`, at least one entry in `DEDICATED_LINE_ORDER_PROVIDER_ALLOWLIST` or `DEDICATED_LINE_ORDER_ACCOUNT_ALLOWLIST`, `DEDICATED_LINE_PROJECTION_EXECUTION_ENABLED=true`, `PROVIDER_INVENTORY_SYNC_ENABLED=true`, `BARK_ALERTS_ENABLED=true`, and at least one `BARK_DEVICE_KEYS` entry. `ConfigGuard` must fail production startup when any prerequisite is missing.
 - Real inventory sync requires enabled provider accounts in the database and a running worker service. Keep `PROVIDER_INVENTORY_SYNC_ENABLED=true`, and set `WORKER_INVENTORY_SYNC_INTERVAL_MS` lower than `DATABASE_INVENTORY_FRESHNESS_MS`; production startup fails when inventory sync is enabled but the interval reaches or exceeds the freshness TTL.
 - `.railwayignore` must exclude local env files, build outputs, coverage, test artifacts, temp files, logs, and generated Prisma client artifacts.
 
@@ -177,6 +179,8 @@ curl -fsS https://api.ipipx.365proxy.net/openapi.json
 - `PROVIDER_INVENTORY_SYNC_ENABLED=true` with no enabled provider accounts -> worker stays online and writes no fake inventory.
 - Provider account sync failure -> worker logs the failed account and continues other accounts; do not mark inventory successful or create placeholder rows.
 - `PROVIDER_FULFILLMENT_EXECUTION_ENABLED=true` plus empty allowlists -> `ConfigGuard` exits during production startup.
+- `DEDICATED_LINE_ORDER_EXECUTION_ENABLED=true` with no dedicated-line order allowlist -> `ConfigGuard` exits during production startup.
+- `DEDICATED_LINE_ORDER_EXECUTION_ENABLED=true` with projection execution, inventory sync, Bark alerts, or Bark device keys missing -> `ConfigGuard` exits during production startup; it must not continue into later checks after mocked `process.exit` returns in unit tests.
 - Allowlist configured but provider/account not matched -> fulfillment use case returns `UPSTREAM_DISABLED / provider_not_allowed_for_fulfillment` and no upstream buy occurs.
 
 ### 5. Good/Base/Bad Cases
@@ -189,7 +193,7 @@ curl -fsS https://api.ipipx.365proxy.net/openapi.json
 
 ### 6. Tests Required
 
-- API: `pnpm --filter @ipeasy/api test` for `ConfigGuard`, allowlist, CORS helper, and API behavior touched by runtime env.
+- API: `pnpm --filter @ipeasy/api test` for `ConfigGuard`, fulfillment and dedicated-line allowlists, dedicated-line prerequisite interlocks, CORS helper, and API behavior touched by runtime env. Fatal `ConfigGuard` tests must assert the exact first error and a single exit call so mocked `process.exit` cannot hide fall-through.
 - Worker: `pnpm --filter @ipeasy/worker typecheck`, `lint`, `test`, and `build`.
 - Web: `pnpm --filter @ipeasy/web typecheck`, `lint`, `test`, and `build`.
 - Root gate: `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm build`.
@@ -372,7 +376,7 @@ Make the feature flag explicit so the confirmation path remains executable and a
 - Provider script type gate:
 
 ```bash
-pnpm --filter @ipeasy/api exec tsc --noEmit --pretty false --target ES2022 --module CommonJS --moduleResolution node --strict --skipLibCheck --esModuleInterop --experimentalDecorators --emitDecoratorMetadata --strictPropertyInitialization false scripts/_provider-ops.ts scripts/provider-credential.ts scripts/providers-health-check.ts scripts/providers-sync-inventory.ts scripts/providers-test-buy.ts
+pnpm --filter @ipeasy/api exec tsc --noEmit --pretty false --target ES2022 --module CommonJS --moduleResolution node --strict --skipLibCheck --esModuleInterop --experimentalDecorators --emitDecoratorMetadata --strictPropertyInitialization false scripts/_provider-ops.ts scripts/provider-credential.ts scripts/providers-health-check.ts scripts/providers-sync-inventory.ts scripts/providers-test-buy.ts scripts/seed-line-skus.ts scripts/set-line-sku-inventory-source.ts
 ```
 
 ### 3. Contracts
@@ -412,5 +416,33 @@ This does not compile API scripts.
 
 ```bash
 pnpm --filter @ipeasy/api typecheck
-pnpm --filter @ipeasy/api exec tsc --noEmit --pretty false --target ES2022 --module CommonJS --moduleResolution node --strict --skipLibCheck --esModuleInterop --experimentalDecorators --emitDecoratorMetadata --strictPropertyInitialization false scripts/_provider-ops.ts scripts/provider-credential.ts scripts/providers-health-check.ts scripts/providers-sync-inventory.ts scripts/providers-test-buy.ts
+pnpm --filter @ipeasy/api exec tsc --noEmit --pretty false --target ES2022 --module CommonJS --moduleResolution node --strict --skipLibCheck --esModuleInterop --experimentalDecorators --emitDecoratorMetadata --strictPropertyInitialization false scripts/_provider-ops.ts scripts/provider-credential.ts scripts/providers-health-check.ts scripts/providers-sync-inventory.ts scripts/providers-test-buy.ts scripts/seed-line-skus.ts scripts/set-line-sku-inventory-source.ts
+```
+
+## Scenario: Dedicated-line Migration Execution
+
+### Contracts
+
+- `DEDICATED_LINE_MIGRATION_EXECUTION_ENABLED` defaults to `false`. Production may enable it only when projection execution is enabled and `DEDICATED_LINE_MIGRATION_SMOKE_TARGET_URL` is an HTTPS non-loopback URL.
+- Migration execution tests must cover leased multi-worker claims, stale-worker conditional completion, expired lease recovery, retry exhaustion, non-retryable operator escalation, operator retry, DELETE `404`, matching `DELETED` tombstone readback, cancellation cleanup, and post-commit target readiness.
+- Until OpenUI exposes an atomic staging contract, tests must prove retained target nodes and `EXIT_ONLY` are rejected before capacity/exit reservation; they must not use a fake adapter success to claim these migrations work.
+- A cleanup test passes only when it proves local projection deletion and capacity/exit release happen after all required remote-delete jobs are `COMPLETED`.
+- `NODE_ONLY` coverage must pass through the real projection repository and prove the current assigned exit is used when `targetExitId` is null; a mocked work item does not cover this contract.
+- Race coverage must prove smoke and target-readiness transitions use `phase + status` conditional writes and cannot overwrite a concurrent cancellation. Retry coverage must prove uncommitted cleanup returns to `CANCELLED`, not `ACTIVE`.
+- Commit coverage must reject incomplete, duplicated, stale-version, or non-ready source projection sets before mutation. Cleanup must escalate structurally missing projection links instead of repeatedly deferring without consuming an attempt.
+- DELETE conflict coverage must distinguish an exact same-version `DELETED` replay from a true `409` conflict; the latter is non-retryable and must reach operator handling.
+- Smoke coverage must reject stale verified observations and country-mismatched results without advancing the migration. Route-import replay coverage must reject a different migration/stage for the same source version; target-readiness coverage must reject missing or duplicate TARGET projection links.
+- Audit coverage must prove migration cancel, route import, smoke evidence, and cleanup completion write business audit records in the same transaction. Cancellation must use `phase + status` CAS, a raced cancellation must not persist an audit record, and terminal/replayed operations must not emit duplicate audit records.
+
+### Required Gate
+
+```bash
+pnpm --filter @ipeasy/api typecheck
+pnpm --filter @ipeasy/api lint
+pnpm --filter @ipeasy/api test
+pnpm --filter @ipeasy/api build
+pnpm --filter @ipeasy/worker typecheck
+pnpm --filter @ipeasy/worker lint
+pnpm --filter @ipeasy/worker test
+pnpm --filter @ipeasy/worker build
 ```

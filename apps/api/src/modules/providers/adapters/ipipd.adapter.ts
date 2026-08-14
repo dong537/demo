@@ -19,6 +19,7 @@ import {
 } from '../provider.types';
 import { UpstreamLogRepository } from '../upstream-log.repository';
 import { IPIPD_ALPHA2_TO_ALPHA3, IPIPD_ALPHA3_TO_ALPHA2, providerCountryName } from '../provider-country-coverage';
+import { requireFutureDeliveryExpiry } from '../provider-delivery-expiry';
 
 
 const API_PREFIX = '/openapi/v2';
@@ -79,7 +80,7 @@ interface StaticInstanceV2DTO {
   port: number;
   username: string;
   password: string;
-  protocol?: number;
+  protocol?: number | string;
   status?: number;
   createdAt?: string;
   updatedAt?: string;
@@ -201,17 +202,20 @@ export class IpipdAdapter implements ProviderAdapter {
   /**
    * Maps IPIPD static proxy instances into platform delivery records.
    */
-  private mapInstance(inst: StaticInstanceV2DTO): ProxyDelivery {
+  private mapInstance(inst: StaticInstanceV2DTO, requestedProtocol: 'HTTP' | 'SOCKS5'): ProxyDelivery {
     const alpha2 = inst.countryCode ? IPIPD_ALPHA3_TO_ALPHA2[inst.countryCode] ?? inst.countryCode : '';
-    const expiresMs = inst.expiresAt ? Number(inst.expiresAt) : Date.now();
+    const upstreamProtocol = ipipdInstanceProtocol(inst.protocol);
+    if (upstreamProtocol && upstreamProtocol !== requestedProtocol) {
+      throw new AppError(ErrorCode.UPSTREAM_ERROR, 'provider_delivery_protocol_mismatch', 502);
+    }
     return {
       upstreamProxyId: String(inst.proxyId),
       ip: String(inst.ip),
       port: Number(inst.port),
       username: String(inst.username),
       password: String(inst.password),
-      protocol: 'HTTP',
-      expiresAt: new Date(expiresMs),
+      protocol: requestedProtocol,
+      expiresAt: requireFutureDeliveryExpiry(inst.expiresAt),
       countryCode: alpha2,
     };
   }
@@ -326,7 +330,10 @@ export class IpipdAdapter implements ProviderAdapter {
     const order = await this.request<StaticOrderV2DTO>(req.method, req.path, req.body, config);
 
     const status = this.mapOrderStatus(order.status);
-    const proxies = Array.isArray(order.instances) ? order.instances.map((i) => this.mapInstance(i)) : [];
+    const requestedProtocol = input.protocol === 'SOCKS5' ? 'SOCKS5' : 'HTTP';
+    const proxies = Array.isArray(order.instances)
+      ? order.instances.map((instance) => this.mapInstance(instance, requestedProtocol))
+      : [];
 
     return {
       upstreamOrderId: String(order.orderNo),
@@ -395,7 +402,10 @@ export class IpipdAdapter implements ProviderAdapter {
       throw new AppError(ErrorCode.NOT_FOUND, 'order_not_found', 404, input.upstreamOrderId);
     }
 
-    const proxies = Array.isArray(order.instances) ? order.instances.map((i) => this.mapInstance(i)) : [];
+    const requestedProtocol = input.protocol ?? 'HTTP';
+    const proxies = Array.isArray(order.instances)
+      ? order.instances.map((instance) => this.mapInstance(instance, requestedProtocol))
+      : [];
 
     return {
       upstreamOrderId: String(order.orderNo),
@@ -403,6 +413,13 @@ export class IpipdAdapter implements ProviderAdapter {
       proxies,
     };
   }
+}
+
+function ipipdInstanceProtocol(value: unknown): 'HTTP' | 'SOCKS5' | null {
+  if (typeof value !== 'string') return null;
+  const normalized = value.trim().toUpperCase();
+  if (normalized === 'HTTP' || normalized === 'SOCKS5') return normalized;
+  return null;
 }
 
 function operationFromUri(uri: string): string {

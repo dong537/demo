@@ -61,6 +61,24 @@ export class DedicatedLineProjectionRepository {
   async claimRunnableJob(jobId: string, workerId: string, leaseMs = 60_000): Promise<DedicatedLineProjectionJob | null> {
     return prisma.$transaction(async (tx) => {
       const now = new Date();
+      const candidate = await tx.external_jobs.findFirst({
+        where: { id: jobId, kind: DEDICATED_LINE_PROJECTION_JOB_KIND },
+        select: { aggregateId: true },
+      });
+      if (!candidate) return null;
+      const deleteScheduled = await tx.external_jobs.count({
+        where: { aggregateId: candidate.aggregateId, kind: 'DELETE_DEDICATED_LINE_PROJECTION' },
+      });
+      if (deleteScheduled > 0) {
+        await tx.external_jobs.updateMany({
+          where: { id: jobId, kind: DEDICATED_LINE_PROJECTION_JOB_KIND, status: { in: ['QUEUED', 'RETRYING'] } },
+          data: {
+            status: 'FAILED', completedAt: now, lastErrorCode: 'PROJECTION_DELETE_SCHEDULED',
+            lastErrorDetail: { reasonKey: 'projection_delete_scheduled' },
+          },
+        });
+        return null;
+      }
       const claimed = await tx.external_jobs.updateMany({
         where: {
           id: jobId,
@@ -88,32 +106,49 @@ export class DedicatedLineProjectionRepository {
 
   async recoverExpiredLeases(): Promise<number> {
     return prisma.$transaction(async (tx) => {
+      const now = new Date();
       const expired = await tx.external_jobs.findMany({
         where: {
           kind: DEDICATED_LINE_PROJECTION_JOB_KIND,
           status: 'LEASED',
-          leaseExpiresAt: { lt: new Date() },
+          leaseExpiresAt: { lt: now },
         },
-        select: { id: true, aggregateId: true },
+        select: { id: true, aggregateId: true, attempt: true, maxAttempts: true, payload: true },
       });
       if (expired.length === 0) return 0;
-      const ids = expired.map((job) => job.id);
-      const projectionIds = expired.map((job) => job.aggregateId);
-      await tx.external_jobs.updateMany({
-        where: { id: { in: ids }, status: 'LEASED' },
-        data: {
-          status: 'RETRYING', nextRunAt: new Date(), leaseOwner: null, leaseExpiresAt: null,
-          lastErrorCode: 'PROJECTION_LEASE_EXPIRED', lastErrorDetail: { reasonKey: 'idempotent_projection_retry' },
-        },
-      });
-      await tx.dedicated_line_projections.updateMany({
-        where: { id: { in: projectionIds }, status: 'APPLYING' },
-        data: {
-          status: 'FAILED', retryCount: { increment: 1 }, lastErrorCode: 'PROJECTION_LEASE_EXPIRED',
-          lastErrorDetail: { reasonKey: 'idempotent_projection_retry' },
-        },
-      });
-      return expired.length;
+      let recovered = 0;
+      for (const job of expired) {
+        const terminal = job.attempt >= job.maxAttempts;
+        const result = await tx.external_jobs.updateMany({
+          where: { id: job.id, status: 'LEASED', leaseExpiresAt: { lt: now } },
+          data: {
+            status: terminal ? 'FAILED' : 'RETRYING', nextRunAt: now, completedAt: terminal ? now : null,
+            leaseOwner: null, leaseExpiresAt: null,
+            lastErrorCode: terminal ? 'PROJECTION_LEASE_ATTEMPTS_EXHAUSTED' : 'PROJECTION_LEASE_EXPIRED',
+            lastErrorDetail: { reasonKey: terminal ? 'projection_lease_attempts_exhausted' : 'idempotent_projection_retry' },
+          },
+        });
+        if (result.count !== 1) continue;
+        recovered += 1;
+        await tx.dedicated_line_projections.updateMany({
+          where: { id: job.aggregateId, status: 'APPLYING' },
+          data: {
+            status: 'FAILED', retryCount: { increment: 1 },
+            lastErrorCode: terminal ? 'PROJECTION_LEASE_ATTEMPTS_EXHAUSTED' : 'PROJECTION_LEASE_EXPIRED',
+            lastErrorDetail: { reasonKey: terminal ? 'projection_lease_attempts_exhausted' : 'idempotent_projection_retry' },
+          },
+        });
+        const migrationId = migrationIdFromPayload(job.payload);
+        if (terminal && migrationId) await tx.dedicated_line_migrations.updateMany({
+          where: { id: migrationId, status: { in: ['ACTIVE', 'CANCELLED'] } },
+          data: {
+            status: 'NEEDS_OPERATOR', retryCount: { increment: 1 },
+            lastErrorCode: 'PROJECTION_LEASE_ATTEMPTS_EXHAUSTED',
+            lastErrorDetail: { reasonKey: 'projection_lease_attempts_exhausted' },
+          },
+        });
+      }
+      return recovered;
     });
   }
 
@@ -147,11 +182,15 @@ export class DedicatedLineProjectionRepository {
       throw new AppError(ErrorCode.PERMISSION_DENIED, 'dedicated_line_projection_scope_violation', 403);
     }
     const assignment = line.exitAssignment;
-    const migrationTarget = projection.migration?.targetExit;
-    if (projection.migrationId && !migrationTarget) {
+    const migration = projection.migration;
+    const migrationTarget = migration?.targetExit;
+    if (projection.migrationId && !migration) {
+      throw new AppError(ErrorCode.DEDICATED_LINE_CONFIG_INVALID, 'dedicated_line_migration_missing', 500);
+    }
+    if (migration && migration.type !== 'NODE_ONLY' && !migrationTarget) {
       throw new AppError(ErrorCode.DEDICATED_LINE_CONFIG_INVALID, 'dedicated_line_migration_target_exit_missing', 500);
     }
-    if (!projection.migrationId && (!assignment || assignment.status !== 'ACTIVE')) {
+    if (!migrationTarget && (!assignment || assignment.status !== 'ACTIVE')) {
       throw new AppError(ErrorCode.DEDICATED_LINE_CONFIG_INVALID, 'dedicated_line_exit_assignment_missing', 500);
     }
     const exit = migrationTarget ?? assignment!.residentialExit;
@@ -193,10 +232,22 @@ export class DedicatedLineProjectionRepository {
     observed: { projectionId: string; observedVersion: number; observedHash: string; nodeExternalId: string },
   ): Promise<void> {
     await prisma.$transaction(async (tx) => {
-      const current = await tx.external_jobs.findUnique({ where: { id: job.id } });
-      if (!current) throw new AppError(ErrorCode.NOT_FOUND, 'projection_job_not_found', 404);
-      assertLease(current, workerId, job.desiredVersion);
-      if (current.aggregateId !== observed.projectionId) {
+      const now = new Date();
+      const completed = await tx.external_jobs.updateMany({
+        where: activeProjectionLeaseWhere(job, workerId, now),
+        data: {
+          status: 'COMPLETED', completedAt: now, leaseOwner: null, leaseExpiresAt: null,
+          lastErrorCode: null, lastErrorDetail: Prisma.JsonNull,
+        },
+      });
+      if (completed.count !== 1) staleProjectionLease();
+      const deleteScheduled = await tx.external_jobs.count({
+        where: { aggregateId: job.aggregateId, kind: 'DELETE_DEDICATED_LINE_PROJECTION' },
+      });
+      if (deleteScheduled > 0) {
+        throw new AppError(ErrorCode.IDEMPOTENCY_CONFLICT, 'projection_delete_scheduled', 409);
+      }
+      if (job.aggregateId !== observed.projectionId) {
         throw new AppError(ErrorCode.IDEMPOTENCY_CONFLICT, 'projection_job_aggregate_mismatch', 409);
       }
       const updated = await tx.dedicated_line_projections.updateMany({
@@ -204,19 +255,12 @@ export class DedicatedLineProjectionRepository {
         data: {
           status: 'READY', observedVersion: observed.observedVersion, observedHash: observed.observedHash,
           nodeExternalId: observed.nodeExternalId, lastErrorCode: null, lastErrorDetail: Prisma.JsonNull,
-          lastAppliedAt: new Date(), lastObservedAt: new Date(),
+          lastAppliedAt: now, lastObservedAt: now,
         },
       });
       if (updated.count !== 1) throw new AppError(ErrorCode.IDEMPOTENCY_CONFLICT, 'projection_desired_version_stale', 409);
-      await tx.external_jobs.update({
-        where: { id: current.id },
-        data: {
-          status: 'COMPLETED', completedAt: new Date(), leaseOwner: null, leaseExpiresAt: null,
-          lastErrorCode: null, lastErrorDetail: Prisma.JsonNull,
-        },
-      });
-      await updateLineReadiness(tx, current.dedicatedLineId);
-      await advanceMigrationTargetReadiness(tx, migrationIdFromPayload(current.payload));
+      await updateLineReadiness(tx, job.dedicatedLineId);
+      await advanceMigrationTargetReadiness(tx, migrationIdFromPayload(job.payload));
     });
   }
 
@@ -234,6 +278,18 @@ export class DedicatedLineProjectionRepository {
       const status = options.retry
         ? (current.attempt >= current.maxAttempts ? 'FAILED' : 'RETRYING')
         : 'NEEDS_OPERATOR';
+      const now = new Date();
+      const failed = await tx.external_jobs.updateMany({
+        where: activeProjectionLeaseWhere(current, workerId, now),
+        data: {
+          status,
+          nextRunAt: status === 'RETRYING' ? new Date(now.getTime() + retryDelayMs(current.attempt)) : current.nextRunAt,
+          completedAt: status === 'RETRYING' ? null : now,
+          leaseOwner: null, leaseExpiresAt: null, lastErrorCode: code,
+          lastErrorDetail: detail as Prisma.InputJsonObject,
+        },
+      });
+      if (failed.count !== 1) staleProjectionLease();
       await tx.dedicated_line_projections.updateMany({
         where: { id: current.aggregateId, desiredVersion: current.desiredVersion },
         data: {
@@ -241,19 +297,14 @@ export class DedicatedLineProjectionRepository {
           lastErrorDetail: detail as Prisma.InputJsonObject,
         },
       });
-      await tx.external_jobs.update({
-        where: { id: current.id },
-        data: {
-          status,
-          nextRunAt: status === 'RETRYING' ? new Date(Date.now() + retryDelayMs(current.attempt)) : current.nextRunAt,
-          completedAt: status === 'RETRYING' ? null : new Date(),
-          leaseOwner: null,
-          leaseExpiresAt: null,
-          lastErrorCode: code,
-          lastErrorDetail: detail as Prisma.InputJsonObject,
-        },
-      });
-      if (status !== 'RETRYING') await updateLineReadiness(tx, current.dedicatedLineId, true);
+      if (status !== 'RETRYING') {
+        const migrationId = migrationIdFromPayload(current.payload);
+        if (migrationId) await tx.dedicated_line_migrations.updateMany({
+          where: { id: migrationId, status: { in: ['ACTIVE', 'CANCELLED'] } },
+          data: { status: 'NEEDS_OPERATOR', retryCount: { increment: 1 }, lastErrorCode: code, lastErrorDetail: detail as Prisma.InputJsonObject },
+        });
+        await updateLineReadiness(tx, current.dedicatedLineId, true);
+      }
       return status;
     });
   }
@@ -261,6 +312,14 @@ export class DedicatedLineProjectionRepository {
 
 function assertLease(job: DedicatedLineProjectionJob, workerId: string, desiredVersion = job.desiredVersion): void {
   assertLeaseCompletion(job, { workerId, desiredVersion, now: new Date() });
+}
+
+function activeProjectionLeaseWhere(job: Pick<DedicatedLineProjectionJob, 'id' | 'desiredVersion'>, workerId: string, now: Date) {
+  return { id: job.id, desiredVersion: job.desiredVersion, status: 'LEASED' as const, leaseOwner: workerId, leaseExpiresAt: { gt: now } };
+}
+
+function staleProjectionLease(): never {
+  throw new AppError(ErrorCode.IDEMPOTENCY_CONFLICT, 'projection_job_lease_stale', 409);
 }
 
 async function updateLineReadiness(tx: Prisma.TransactionClient, dedicatedLineId: string | null, terminalFailure = false): Promise<void> {
@@ -271,7 +330,9 @@ async function updateLineReadiness(tx: Prisma.TransactionClient, dedicatedLineId
   });
   if (!line?.placement || !['PROVISIONING', 'ACTIVE', 'DEGRADED'].includes(line.status)) return;
   const ready = line.projections.filter((projection) =>
-    projection.status === 'READY' && projection.observedVersion === projection.desiredVersion,
+    projection.desiredVersion === line.desiredVersion
+    && projection.status === 'READY'
+    && projection.observedVersion === projection.desiredVersion,
   ).length;
   const routeCount = await tx.delivery_routes.count({ where: { dedicatedLineId: line.id, isCurrent: true } });
   const status = ready >= line.placement.minReadyReplicaCount && routeCount === 0
@@ -296,20 +357,32 @@ async function advanceMigrationTargetReadiness(tx: Prisma.TransactionClient, mig
   if (!migrationId) return;
   const migrationTable = (tx as unknown as {
     dedicated_line_migrations?: {
-      findUnique: (args: { where: { id: string }; select: { type: true; phase: true; status: true } }) => Promise<{ type: string; phase: string; status: string } | null>;
-      update: (args: { where: { id: string }; data: { phase: string; status: string } }) => Promise<unknown>;
+      findUnique: (args: { where: { id: string }; select: { type: true; phase: true; status: true; nodes: { where: { role: string }; select: { projectionId: true } } } }) => Promise<{ type: string; phase: string; status: string; nodes: Array<{ projectionId: string | null }> } | null>;
+      updateMany: (args: { where: { id: string; phase: string; status: string }; data: { phase: string; status: string } }) => Promise<{ count: number }>;
     };
   }).dedicated_line_migrations;
   const projectionTable = (tx.dedicated_line_projections as unknown as {
-    findMany?: (args: { where: { migrationId: string }; select: { status: true; desiredVersion: true; observedVersion: true } }) => Promise<Array<{ status: string; desiredVersion: number; observedVersion: number | null }>>;
+    findMany?: (args: { where: { migrationId: string }; select: { id: true; status: true; desiredVersion: true; observedVersion: true } }) => Promise<Array<{ id: string; status: string; desiredVersion: number; observedVersion: number | null }>>;
   });
   if (!migrationTable || typeof projectionTable.findMany !== 'function') return;
-  const migration = await migrationTable.findUnique({ where: { id: migrationId }, select: { type: true, phase: true, status: true } });
+  const migration = await migrationTable.findUnique({
+    where: { id: migrationId },
+    select: { type: true, phase: true, status: true, nodes: { where: { role: 'TARGET' }, select: { projectionId: true } } },
+  });
   if (!migration || migration.phase !== 'PREPARE' || migration.status !== 'ACTIVE') return;
-  const projections = await projectionTable.findMany({ where: { migrationId }, select: { status: true, desiredVersion: true, observedVersion: true } });
-  if (projections.length === 0 || projections.some((projection) => projection.status !== 'READY' || projection.observedVersion !== projection.desiredVersion)) return;
+  const expectedProjectionIds = migration.nodes.map((node) => node.projectionId);
+  if (expectedProjectionIds.length === 0 || expectedProjectionIds.some((id) => !id) || new Set(expectedProjectionIds).size !== expectedProjectionIds.length) return;
+  const projections = await projectionTable.findMany({ where: { migrationId }, select: { id: true, status: true, desiredVersion: true, observedVersion: true } });
+  if (
+    projections.length !== expectedProjectionIds.length
+    || projections.some((projection) => projection.status !== 'READY' || projection.observedVersion !== projection.desiredVersion)
+    || projections.some((projection) => !expectedProjectionIds.includes(projection.id))
+  ) return;
   const next = assertMigrationTransition({ type: migration.type as 'NODE_ONLY' | 'EXIT_ONLY' | 'FULL', phase: migration.phase as 'PREPARE', status: migration.status as 'ACTIVE' }, { type: 'TARGET_PROJECTIONS_READY' });
-  await migrationTable.update({ where: { id: migrationId }, data: { phase: next.phase, status: next.status } });
+  await migrationTable.updateMany({
+    where: { id: migrationId, phase: migration.phase, status: migration.status },
+    data: { phase: next.phase, status: next.status },
+  });
 }
 
 function retryDelayMs(attempt: number): number {

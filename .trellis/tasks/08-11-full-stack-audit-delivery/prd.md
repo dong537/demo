@@ -1,5 +1,22 @@
 # 365Proxy 全项目审计与全链路交付
 
+## Production Closure Addendum (2026-08-14)
+
+The current execution batch is deliberately bounded and must not modify
+`apps/web`, especially the frozen `apps/web/dist` recovered from Railway.
+
+1. IPIPD delivery mapping must preserve the requested protocol for both the
+   synchronous buy response and later order queries. A dedicated-line request
+   for `SOCKS5` must never be returned as `HTTP`.
+2. IPIPD and 985Proxy delivery records must reject a missing or invalid expiry
+   value. They must not invent `Date.now()` or a synthetic 30-day expiry.
+3. In production, enabling dedicated-line order execution requires projection
+   execution, provider inventory synchronization, and Bark alerts to be enabled
+   in addition to the existing provider/account allowlist requirement.
+4. These contracts require focused adapter/config tests, API typecheck, lint,
+   tests, and build. Existing production execution gates remain disabled until
+   external infrastructure and real delivery smoke checks pass.
+
 ## Goal
 
 将当前已恢复的 `ipeasy-platform` monorepo 收敛为可生产运行的 365Proxy 与
@@ -259,3 +276,36 @@ Telemetry/probe -> usage/health -> UI/API server state -> alert/repair/exit swit
 - 当前 Provider Adapter：IPIPD、985Proxy、PR；手工 SOCKS5 导入尚未在 schema/Adapter 中确认。
 - 当前 worker：静态代理履约和库存同步；未发现 3x-ui reconciliation worker。
 - 当前恢复快照无 `.git` 历史，已初始化空 Git 仓库；基线提交仍需用户确认。
+## 生产依赖安全门（2026-08-14）
+
+- 仅升级 API 的 NestJS/Fastify 生产依赖及其必要的锁文件解析，禁止修改 `apps/web/**`。
+- 生产依赖审计不得残留 critical/high；若上游没有修复版本，必须记录精确依赖链和隔离措施，不能静默忽略。
+- 升级后必须通过 API 全量测试、typecheck、lint、build 和 `git diff --check`，并再次校验冻结前端哈希。
+## 专线迁移生产状态机门（2026-08-14）
+
+### 目标与边界
+
+- 目标用户是平台运维；成功标准是迁移从目标投影、路由导入、smoke、提交到远端清理全程可达、幂等、可审计，旧资源只在远端确认删除后释放。
+- 不修改 `apps/web/**`，不自动操作 NY 面板，不在没有人工导入路由证据时推进路由阶段，不默认开启生产迁移执行。
+
+### Source of Truth 与 Module
+
+- `dedicated_line_migrations` 拥有迁移 phase/status；`dedicated_line_migration_nodes` 拥有源/目标节点和投影关联；`dedicated_line_projections` 拥有每个 3x-ui 投影的期望/观测状态；`external_jobs` 是远端 apply/delete 唯一执行队列。
+- API use case 负责事务内状态转换和排队；Projection Adapter 是 3x-ui managed-line HTTP seam；Worker 只租约并执行 `external_jobs` 及迁移阶段任务；数据库状态不得在远端调用成功前宣告清理完成。
+
+### Interface 与数据流
+
+- 提交前必须满足目标投影 READY、有效 smoke、需要时存在 cutover route import。
+- COMMIT 只切换逻辑 placement/exit/current route，保留旧投影记录并排队幂等 DELETE；新投影继续使用已创建的 versioned projection key，进入 PENDING 重新 apply。线路在新投影 READY 前不得标记 ACTIVE。
+- CLEANUP 必须同时验证：提交后的目标投影 READY、旧投影 delete jobs COMPLETED、线路 ACTIVE；随后才释放源节点差额容量、旧出口和迁移 reservation，并完成迁移。
+- 取消迁移同样必须清理已创建的目标远端投影后才释放预留资源。
+- Worker 通过默认关闭的 `DEDICATED_LINE_MIGRATION_EXECUTION_ENABLED` 执行 VERIFY smoke 和 CLEANUP；失败保留明确错误/重试或 NEEDS_OPERATOR，禁止 broad catch 后继续。
+- 新增远端 delete job kind 仍复用 `external_jobs` 的租约/attempt/错误字段；删除 API 返回 404 视为幂等成功，401/403/冲突和输入错误进入 NEEDS_OPERATOR，超时与 5xx 按现有上限重试。
+- smoke/cleanup Worker 只扫描 migration 的合法阶段并用条件更新抢占执行，避免多副本重复执行；smoke 失败记录 observation 并留在 VERIFY，不自动 commit。
+- 若为关闭已确认缺口必须新增 schema 字段/索引，应提交显式 Prisma migration，不做运行期自动迁移或旧 schema fallback。
+
+### 风险与验证
+
+- 覆盖 retained node、节点迁移、exit-only、重复轮询、远端 404 幂等删除、删除失败、目标重投影未就绪、取消清理和租约过期。
+- 必须通过新增 RED/GREEN 测试、API/Worker 全量测试、typecheck、lint、build、`git diff --check`，并校验冻结前端哈希不变。
+- 已确认的 OpenUI blocker 必须维持 fail-closed，并在独立复核中验证不会先占用库存/节点/出口；不得用降级路径声称 retained-node 或 EXIT_ONLY 已支持。

@@ -14,20 +14,74 @@ export class CancelDedicatedLineMigrationUseCase {
       if (!migration) throw new AppError(ErrorCode.NOT_FOUND, 'migration_not_found', 404);
       const next = assertMigrationTransition({ type: migration.type, phase: migration.phase, status: migration.status }, { type: 'CANCEL' });
       if (next.status === 'CANCELLED') {
-        const targetNodeIds = migration.nodes.filter((node) => node.role === 'TARGET' && node.reservationStatus === 'RESERVED').map((node) => node.nodeId);
-        if (targetNodeIds.length > 0) {
-          await tx.control_nodes.updateMany({ where: { id: { in: targetNodeIds }, allocatedUnits: { gt: 0 } }, data: { allocatedUnits: { decrement: 1 } } });
-        }
-        await tx.dedicated_line_migration_nodes.updateMany({ where: { migrationId: migration.id, role: 'TARGET', reservationStatus: 'RESERVED' }, data: { reservationStatus: 'RELEASED', releasedAt: new Date() } });
-        const projections = await tx.dedicated_line_projections.findMany({ where: { migrationId: migration.id }, select: { id: true } });
+        const projections = await tx.dedicated_line_projections.findMany({
+          where: { migrationId: migration.id },
+          select: { id: true, projectionKey: true, desiredVersion: true },
+        });
         if (projections.length > 0) {
-          await tx.external_jobs.deleteMany({ where: { aggregateId: { in: projections.map((projection) => projection.id) }, status: { in: ['QUEUED', 'RETRYING'] } } });
-          await tx.dedicated_line_projections.deleteMany({ where: { id: { in: projections.map((projection) => projection.id) } } });
+          await tx.external_jobs.deleteMany({ where: { aggregateId: { in: projections.map((projection) => projection.id) }, kind: 'APPLY_DEDICATED_LINE_PROJECTION', status: { in: ['QUEUED', 'RETRYING'] } } });
+          for (const projection of projections) {
+            const deleteVersion = projection.desiredVersion + 1;
+            const deleteKey = `delete_dedicated_line_projection:${migration.id}:${projection.id}:v${deleteVersion}`;
+            await tx.external_jobs.create({
+              data: {
+                siteId: migration.siteId,
+                tenantId: migration.tenantId,
+                userId: migration.userId,
+                dedicatedLineId: migration.dedicatedLineId,
+                kind: 'DELETE_DEDICATED_LINE_PROJECTION',
+                aggregateType: 'dedicated_line_projection',
+                aggregateId: projection.id,
+                desiredVersion: deleteVersion,
+                idempotencyKey: deleteKey,
+                dedupeKey: deleteKey,
+                payload: { migrationId: migration.id, projectionKey: projection.projectionKey, projectionDesiredVersion: projection.desiredVersion },
+              },
+            });
+          }
         }
-        if (migration.targetExitId) await tx.residential_exits.updateMany({ where: { id: migration.targetExitId, status: 'RESERVED' }, data: { status: 'AVAILABLE' } });
+        const cleanupKey = `cleanup_dedicated_line_migration:${migration.id}:v${migration.targetLineVersion}`;
+        await tx.external_jobs.create({
+          data: {
+            siteId: migration.siteId,
+            tenantId: migration.tenantId,
+            userId: migration.userId,
+            dedicatedLineId: migration.dedicatedLineId,
+            kind: 'CLEANUP_DEDICATED_LINE_MIGRATION',
+            aggregateType: 'dedicated_line_migration',
+            aggregateId: migration.id,
+            desiredVersion: migration.targetLineVersion,
+            idempotencyKey: cleanupKey,
+            dedupeKey: cleanupKey,
+            payload: { migrationId: migration.id },
+          },
+        });
       }
-      await tx.dedicated_line_migrations.update({ where: { id: migration.id }, data: { phase: next.phase, status: next.status } });
-      if (next.status === 'CANCELLED') await tx.dedicated_lines.update({ where: { id: migration.dedicatedLineId }, data: { activeMigrationId: null } });
+      const updated = await tx.dedicated_line_migrations.updateMany({
+        where: { id: migration.id, phase: migration.phase, status: migration.status },
+        data: { phase: next.phase, status: next.status },
+      });
+      if (updated.count !== 1) {
+        throw new AppError(ErrorCode.IDEMPOTENCY_CONFLICT, 'migration_cancel_raced', 409);
+      }
+      await tx.audit_logs.create({
+        data: {
+          siteId: migration.siteId,
+          tenantId: migration.tenantId,
+          actorType: ctx.ownerType === 'SYSTEM' ? 'SYSTEM' : 'ADMIN_USER',
+          actorId: ctx.ownerId,
+          targetType: 'dedicated_line_migration',
+          targetId: migration.id,
+          action: 'dedicated_line.migration.cancel',
+          requestId: ctx.requestId,
+          meta: {
+            fromPhase: migration.phase,
+            fromStatus: migration.status,
+            phase: next.phase,
+            status: next.status,
+          },
+        },
+      });
       return { migrationId: migration.id, phase: next.phase, status: next.status };
     });
   }
