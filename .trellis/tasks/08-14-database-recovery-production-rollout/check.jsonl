@@ -1,0 +1,5 @@
+{"file":".trellis/spec/testing-deployment.md","reason":"质量检查必须覆盖测试、构建、healthcheck、部署和回滚证据。"}
+{"file":".trellis/spec/database.md","reason":"检查备份恢复、容量、迁移和数据一致性。"}
+{"file":".trellis/spec/security-permissions.md","reason":"检查 secrets、权限错误和生产执行门。"}
+{"file":".trellis/spec/frontend-ui-ux.md","reason":"确认前端冻结且未出现页面或交互回归。"}
+{"file":".trellis/tasks/08-14-database-recovery-production-rollout/research/railway-recovery.md","reason":"对照已知 Railway 阻断证据，避免误报恢复成功。"}

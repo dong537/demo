@@ -1,0 +1,7 @@
+{"file":".trellis/spec/architecture.md","reason":"恢复和上线涉及数据库、backend、worker、Railway adapter 的模块边界与 source of truth。"}
+{"file":".trellis/spec/database.md","reason":"需要遵循 PostgreSQL、迁移、备份和数据一致性约束。"}
+{"file":".trellis/spec/testing-deployment.md","reason":"需要按项目约定执行集成测试、构建、部署和 smoke 验证。"}
+{"file":".trellis/spec/security-permissions.md","reason":"生产凭据轮换、Railway 权限和高风险执行开关必须显式处理。"}
+{"file":".trellis/spec/backend/database-guidelines.md","reason":"恢复后的数据库连接、迁移与查询验证遵循 backend 数据库规范。"}
+{"file":".trellis/spec/backend/error-handling.md","reason":"恢复/部署错误必须显式失败，不得吞错或伪装为空。"}
+{"file":".trellis/tasks/08-14-database-recovery-production-rollout/research/railway-recovery.md","reason":"记录 Railway 当前卷已满、备份恢复权限和不可原地覆盖的事实。"}
