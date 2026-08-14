@@ -176,3 +176,14 @@
 - 支付确认、Provider 履约和迁移执行开关必须继续保持关闭。恢复顺序应为：扩容或从 Railway 原生备份恢复到新卷 -> 数据完整性/迁移检查 -> backend/worker 部署 -> 冻结前端与 API contract 对齐验证 -> 真实测试 SKU 小额全链路 smoke -> 经人工审批逐项启用执行开关。
 - 用户在会话中暴露过基础设施与上游应用凭据；生产恢复前必须全部轮换，并只通过 Railway secret 重新注入。
 - 代码工作树中的历史测试 fixture `apps/api/src/common/crypto/aes-gcm.spec.ts` 与 `apps/api/src/modules/providers/tests/adapter-buy-request.spec.ts` 已移除真实 APIKey 前缀和 ZoneID，改为测试占位值；这不清除 Git 历史中的旧提交，因此凭据轮换仍是上线前硬门。
+
+## GitHub 最终合并树复验（2026-08-14）
+
+- 基线：将生产加固提交重放到 `origin/master` 的 `0254b7e` 后形成 `fff9393`；相对基线的 `apps/web/**` 差异为空，未修改远端原有前端。
+- 冻结安装：pnpm `10.34.5` 使用最终 `pnpm-lock.yaml` 执行 `install --frozen-lockfile --ignore-scripts`，exit 0。
+- API 单元测试：99 files / 601 tests passed，exit 0；Worker：6 files / 21 tests passed，exit 0。
+- 真实依赖集成测试：复用健康的本地 PostgreSQL 16 与 Redis 7；18 个数据库迁移无待执行项；33 files / 162 tests passed，exit 0。覆盖专线下单、并发库存、Bark outbox、支付/钱包、RBAC、审计和故障语义。
+- 根级门禁：全 workspace `typecheck` 7/7 tasks、`lint` 3/3 tasks、`test` 和 `build` 均 exit 0；API/Worker 包级 TypeCheck、Lint、Build 与 Provider/SKU 脚本严格 TypeScript 门禁均 exit 0。
+- 安全与运维：secret scan 检查 1466 files，exit 0；security tests 3/3、operations tests 11/11；冻结前端制品 279 files 校验通过；327 个生产依赖的 info/low/moderate/high/critical 漏洞均为 0。
+- 前端回归测试存在远端基线原有的 React `act(...)` 警告，但测试命令 exit 0；本任务遵守用户要求，不修改前端来消除这些警告。
+- `predeploy:check` 仅证明最终 Git 工作树干净，不代表 Railway 基础设施可用。Railway 数据库磁盘满、服务崩溃及外部 OpenUI staging contract 等阻塞仍成立，因此未部署、未打开任何生产执行开关。
