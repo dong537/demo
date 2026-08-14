@@ -80,3 +80,12 @@
 - Secret scan passed 1,492 files. `git diff --name-only -- apps/web frozen/frontend-railway-6f71aaa1` remained empty.
 - Production backend variables now explicitly set `LEGACY_API_V1_ENABLED=true`, `LEGACY_API_SITE_ID=61be22a2-4bce-4282-afe8-8d57c9faf921`, and allow both current and frozen frontend origins. Variable changes were staged with deploys skipped pending the verified code release.
 - External provider, 3x-ui, NY forwarding, projection, migration, and Bark execution workers remain disabled. They require separate real-upstream smoke approval.
+
+## Online compatibility rollout (2026-08-15)
+
+- GitHub `dong537/demo` `master` now points to `72fc85f9664223c11d1f3a255c166c564189fe90`.
+- Current production backend deployment `bcea7171-8cba-4633-9310-282be969ac95` reached `SUCCESS`; `/health` reports the same release SHA and `/ready` reports healthy database and Redis.
+- Current production backend responds with raw `/api/v1/health` and capabilities; unauthenticated `/api/v1/dedicated-skus` returns HTTP 401.
+- CORS preflight from `https://frontend-test-a8da.up.railway.app` returns 204 with the matching allow-origin header.
+- Old backend service deployment `eaf06e22-da0c-44df-90aa-df15474e81be` reached `SUCCESS` with `LEGACY_PROXY_TARGET=https://backend-production-43893.up.railway.app`; the previous backend deployment `386262c1-41e1-4147-97a1-8f4a5ad739d3` remains in Railway history for rollback.
+- Old hostname checks passed: `/healthz` 200, raw capabilities 200, raw legacy 401, CORS 204, and proxied `/health` reports release `72fc85f`.
