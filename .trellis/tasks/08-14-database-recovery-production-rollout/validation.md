@@ -98,3 +98,19 @@
 - The IPIPD adapter signature was checked against the official docs bundle: `METHOD + URI + second timestamp + nonce + body`, HMAC-SHA256 hex. Existing Railway IPIPD variables point at the sandbox host and do not match the supplied production credentials; the current values returned 401 signature/auth failures, and the supplied production pair also returned 401 against `https://api.ipipd.cn`. No IPIPD execution was enabled.
 - Production worker gate snapshot: payment, fulfillment, inventory sync, dedicated-line order, projection, migration, health, and Bark execution flags are all `false`; Bark device keys are absent; provider and provider-account order allowlists are empty. This is intentional fail-closed state, not a successful production approval.
 - Railway SSH access timed out before a banner, so 3x-ui panel/API authentication and NY route import cannot be claimed from TCP checks alone. The real provider/3x-ui/NY/Bark smoke gate remains open.
+
+## NY panel read-only verification (2026-08-15)
+
+- Read-only login to `https://ny.mstp.online/` succeeded through `/api/v1/auth/login`. The account is user `rundong`, numeric id `6`, `admin=false`; no NY mutation endpoint was called.
+- The account reports `used_rules=5` and `max_rules=1000`. All five visible rules have `ForwardRuleStatus_Normal`.
+- Device-group read-back identifies rule input group `9` as `深港专线-深圳端` with connect hosts `14.116.138.238` and `120.241.230.65`, and output group `10` as `深港专线-香港端`.
+- Current rule snapshot:
+  - `短视频-测试`: listen `60701` -> `91.149.237.33:50801`.
+  - `直播-测试`: listen `60702` -> `91.149.237.33:50801`.
+  - Other rules: `20001` -> `91.149.237.33:10001`, `30081` -> `91.149.237.33:30081`, and `60703` -> `91.149.237.33:46944`.
+- The two test rules do not match the supplied test chain that maps SV `60701` to target `60701` and ZB `60702` to target `60702`. Both currently share target port `50801`; this is a production-blocking route mapping mismatch until the intended 3x-ui listener assignment is confirmed and corrected by an authorized operator.
+- The rule records contain no primary/backup domain alias fields. DNS currently resolves both `test-sv-1.yisukj.top` and `test-zb-1.yisukj.top` to `14.116.138.238`, so the required multi-domain failover evidence is still absent.
+- `/api/v1/system/node/status` returned three groups, but did not include route groups `9` or `10`; it therefore does not prove the health of the exact source/output groups used by these rules. The returned `合作专线` group had an online HK server, while one unrelated overseas server was offline.
+- Read-only TCP checks succeeded for `91.149.237.33` ports `50801`, `60701`, `60702`, `10001`, `46944`, `30081`, both public test domains, and NY ingress `14.116.138.238:60701/:60702`. These checks prove socket reachability only, not SSH/3x-ui authentication, protocol handshake, or forwarding correctness.
+- `/api/v1/system/info` reports panel version `20260505` and `license_expire=2026-08-15 14:01:37 Asia/Shanghai` at the time of observation. Confirm the NY panel license/renewal status before production use.
+- NY API connectivity is now evidenced, but production execution remains disabled pending route-port correction, primary/backup domain import and DNS evidence, exact 3x-ui read-back, provider/Bark smoke tests, and explicit operator approval.
