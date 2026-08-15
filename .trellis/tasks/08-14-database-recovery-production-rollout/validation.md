@@ -114,3 +114,13 @@
 - Read-only TCP checks succeeded for `91.149.237.33` ports `50801`, `60701`, `60702`, `10001`, `46944`, `30081`, both public test domains, and NY ingress `14.116.138.238:60701/:60702`. These checks prove socket reachability only, not SSH/3x-ui authentication, protocol handshake, or forwarding correctness.
 - `/api/v1/system/info` reports panel version `20260505` and `license_expire=2026-08-15 14:01:37 Asia/Shanghai` at the time of observation. Confirm the NY panel license/renewal status before production use.
 - NY API connectivity is now evidenced, but production execution remains disabled pending route-port correction, primary/backup domain import and DNS evidence, exact 3x-ui read-back, provider/Bark smoke tests, and explicit operator approval.
+
+## Corrected 3x-ui network evidence (2026-08-15)
+
+- The earlier TCP result must be downgraded: `91.149.237.33` accepted TCP connects on known ports and on control ports `1`, `7`, `12345`, and `65432`. This is consistent with a SYN proxy or firewall that accepts handshakes broadly; it is not evidence that a service is listening.
+- Application-layer probes received zero bytes: HTTP requests to ports `80`, `50801`, `60701`, `60702`, and random port `65432` timed out with curl code `28`; HTTPS `443` timed out during connection; SSH established TCP but timed out during banner exchange.
+- NY `forward_diagnose` for rules `258` and `259` returned `code=0` but `task_count=0`, null inbound/outbound results, and zero backend task counters. The user account's LookingGlass requests returned `403` because that feature is disabled.
+- A 15-second read-only NY counter sample showed no traffic delta for either test rule. This is not proof of downtime, but it provides no current-use evidence.
+- The local OpenUI source exposes panel port `2053` and uses Xray API port `62789`; the available May XLSX exports contain no `50801`, `60701`, `60702`, or `91.149.237.33` entries. These local artifacts therefore cannot establish the remote Hong Kong listener mapping.
+- After the reported NY license deadline (`2026-08-15 14:01:37 Asia/Shanghai`), the static panel root still returned HTTP `200`, but both `/api/v1/guest/kv/site_info` and `/api/v1/auth/login` returned HTTP `502` on two consecutive checks. Treat the NY backend as unavailable until the panel license is renewed and the authenticated API is reverified.
+- The 3x-ui/NY gate remains blocked until SSH or an authenticated 3x-ui API read-back is available, the exact SV/ZB listener ports are confirmed, and a protocol-level test succeeds through each NY route.
